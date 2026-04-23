@@ -1,0 +1,2650 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lightning Talks · Sohbet Arşivi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sidebar:#1a1d29;
+    --sidebar-2:#13151e;
+    --sidebar-hover:#27293a;
+    --sidebar-active:#1164a3;
+    --main:#1a1d29;
+    --main-2:#222633;
+    --header:#1a1d29;
+    --border:#2f3243;
+    --border-2:#3a3d50;
+    --ink:#d1d2d3;
+    --ink-bright:#ffffff;
+    --ink-muted:#868a93;
+    --ink-dim:#6b6e78;
+    --accent:#ecb22e;
+    --green:#2bac76;
+    --red:#e01e5a;
+    --blue:#4a9eff;
+    --purple:#b68cff;
+    --code-bg:#0f1119;
+    --code-border:#2f3243;
+    --hover-bg:rgba(255,255,255,.04);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--sidebar-2);color:var(--ink);font-family:"Inter",system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
+
+  .app{display:grid;grid-template-columns:260px 1fr;height:100vh}
+
+  /* ============ SIDEBAR ============ */
+  .sidebar{
+    background:var(--sidebar-2);
+    border-right:1px solid var(--border);
+    display:flex;flex-direction:column;
+    overflow-y:auto;
+  }
+  .workspace{
+    padding:14px 16px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .workspace-name{font-weight:800;font-size:17px;color:var(--ink-bright);letter-spacing:-.01em}
+  .workspace-badge{
+    width:8px;height:8px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 0 3px rgba(43,172,118,.18);
+  }
+
+  .nav-section{padding:14px 0 6px}
+  .nav-label{
+    display:flex;align-items:center;gap:6px;
+    padding:4px 16px 6px;
+    font-size:13px;color:var(--ink-muted);font-weight:600;
+  }
+  .nav-label::before{content:"▾";font-size:10px;color:var(--ink-dim)}
+  .nav-label.big{
+    font-size:15px;color:var(--ink-bright);font-weight:800;
+    letter-spacing:-.01em;padding:8px 16px 8px;
+  }
+  .nav-label.big::before{font-size:11px;color:var(--ink-muted)}
+  .channel.big{
+    font-size:15px;padding:8px 16px 8px 22px;font-weight:600;
+  }
+  .channel.big .label{font-weight:600}
+
+  .channel{
+    display:flex;align-items:center;gap:10px;
+    padding:6px 16px 6px 22px;cursor:pointer;
+    font-size:14.5px;color:var(--ink);
+    transition:background .12s;
+    border:none;background:transparent;width:100%;text-align:left;
+    font-family:inherit;
+  }
+  .channel:hover{background:var(--sidebar-hover)}
+  .channel.active{background:var(--sidebar-active);color:var(--ink-bright);font-weight:600}
+  .channel .hash{color:var(--ink-muted);font-weight:400;font-size:15px}
+  .channel.active .hash{color:var(--ink-bright)}
+  .channel .label{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .channel .num{
+    font-family:"JetBrains Mono",monospace;font-size:11px;
+    color:var(--ink-muted);letter-spacing:.05em;
+  }
+  .channel.active .num{color:rgba(255,255,255,.7)}
+  .channel.solution .hash{color:var(--accent)}
+  .channel.solution.active .hash{color:var(--ink-bright)}
+
+  .sidebar-foot{
+    margin-top:auto;padding:14px 16px;
+    border-top:1px solid var(--border);
+    font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-dim);
+    letter-spacing:.08em;text-transform:uppercase;
+  }
+
+  /* ============ MAIN ============ */
+  .main{display:flex;flex-direction:column;background:var(--main);overflow:hidden}
+  .main-head{
+    padding:14px 22px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--main);
+  }
+  .main-head .title{display:flex;align-items:center;gap:8px}
+  .main-head .title .h{color:var(--ink-muted);font-size:18px;font-weight:400}
+  .main-head .title .t{font-weight:800;font-size:17px;color:var(--ink-bright);letter-spacing:-.01em}
+  .main-head .sub{
+    margin-top:2px;font-size:13px;color:var(--ink-muted);
+    display:flex;align-items:center;gap:8px;
+  }
+  .main-head .sub .sep{width:3px;height:3px;border-radius:50%;background:var(--ink-dim)}
+  .main-head .right{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink-muted)}
+
+  .main-body{flex:1;overflow-y:auto;padding:18px 0 30px}
+
+  .view{display:none}
+  .view.active{display:block}
+
+  /* ============ MESSAGES ============ */
+  .msg{
+    display:grid;grid-template-columns:40px 1fr;gap:12px;
+    padding:8px 22px;
+    transition:background .1s;
+  }
+  .msg:hover{background:var(--hover-bg)}
+  .avatar{
+    width:36px;height:36px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Inter",sans-serif;font-weight:700;font-size:13px;color:#0b0d10;
+    letter-spacing:-.02em;
+  }
+  .a-elif{background:linear-gradient(135deg,#ecb22e,#f5a623)}
+  .a-mert{background:linear-gradient(135deg,#2bac76,#48c78e)}
+  .a-canan{background:linear-gradient(135deg,#4a9eff,#b68cff)}
+  .a-burak{background:linear-gradient(135deg,#e01e5a,#ff6a3d)}
+  .a-deniz{background:linear-gradient(135deg,#b68cff,#4a9eff)}
+  .a-kaya{background:linear-gradient(135deg,#48c78e,#6fe4d8)}
+  .a-nazli{background:linear-gradient(135deg,#ff9bd2,#e01e5a)}
+  .a-leyla{background:linear-gradient(135deg,#6fe4d8,#2bac76)}
+  .a-asli{background:linear-gradient(135deg,#ecb22e,#48c78e)}
+  .a-tolga{background:linear-gradient(135deg,#ff6a3d,#ecb22e)}
+
+  .msg-head{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+  .msg-head .name{font-weight:700;color:var(--ink-bright);font-size:15px}
+  .msg-head .role{
+    font-size:11px;color:var(--ink-muted);font-weight:500;
+    padding:1px 6px;border:1px solid var(--border-2);border-radius:3px;
+  }
+  .msg-head .time{font-size:12px;color:var(--ink-muted)}
+  .msg-body{color:var(--ink);font-size:15px;line-height:1.55}
+  .msg-body p{margin-bottom:4px}
+  .msg-body p:last-child{margin-bottom:0}
+  .msg-body code{
+    font-family:"JetBrains Mono",monospace;font-size:13px;
+    background:var(--code-bg);padding:1px 5px;border-radius:3px;
+    color:#e8a87c;border:1px solid var(--code-border);
+  }
+  .msg-body .mention{
+    color:#4a9eff;background:rgba(74,158,255,.1);
+    padding:1px 4px;border-radius:3px;font-weight:500;
+  }
+  .reactions{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+  .rx{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:2px 7px;border:1px solid var(--border-2);border-radius:12px;
+    background:rgba(255,255,255,.03);font-size:12px;color:var(--ink);
+    cursor:default;
+  }
+  .rx b{color:var(--ink-bright);font-weight:600;font-family:"JetBrains Mono",monospace;font-size:11px}
+
+  .day-divider{
+    display:flex;align-items:center;gap:12px;
+    padding:12px 22px;
+  }
+  .day-divider::before,.day-divider::after{
+    content:"";flex:1;height:1px;background:var(--border);
+  }
+  .day-divider span{
+    font-size:12px;color:var(--ink-muted);font-weight:600;
+    padding:3px 10px;border:1px solid var(--border);border-radius:20px;
+    background:var(--main);
+  }
+
+  /* ============ SOLUTION VIEW ============ */
+  .solution-wrap{padding:8px 22px 30px;max-width:820px}
+  .solution-intro{
+    padding:18px 20px;background:rgba(236,178,46,.06);
+    border:1px solid rgba(236,178,46,.25);border-left:3px solid var(--accent);
+    border-radius:6px;margin-bottom:22px;
+  }
+  .solution-intro h2{
+    font-size:19px;color:var(--ink-bright);font-weight:800;margin-bottom:6px;letter-spacing:-.01em;
+  }
+  .solution-intro p{font-size:14.5px;color:var(--ink);line-height:1.55}
+
+  .solution-card{
+    margin-bottom:14px;padding:16px 18px;
+    background:var(--main-2);border:1px solid var(--border);
+    border-radius:6px;
+  }
+  .solution-card .tag{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:"JetBrains Mono",monospace;font-size:11px;
+    color:var(--accent);letter-spacing:.1em;text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .solution-card .tag::before{content:"#";color:var(--ink-muted)}
+  .solution-card h3{
+    font-size:16px;color:var(--ink-bright);font-weight:700;margin-bottom:10px;letter-spacing:-.01em;
+  }
+  .decode{display:grid;grid-template-columns:1fr;gap:10px}
+  .decode-row{
+    display:grid;grid-template-columns:minmax(200px, 34%) 1fr;gap:16px;
+    padding:10px 12px;background:rgba(0,0,0,.2);border-radius:4px;
+    border:1px solid var(--border);
+  }
+  .decode-row .jargon{
+    font-family:"JetBrains Mono",monospace;font-size:13px;color:#e8a87c;
+    font-weight:500;
+  }
+  .decode-row .plain{font-size:14px;color:var(--ink);line-height:1.5}
+  .summary{
+    margin-top:10px;padding:10px 12px;
+    background:rgba(43,172,118,.08);border:1px solid rgba(43,172,118,.2);
+    border-radius:4px;font-size:14px;color:var(--ink);
+  }
+  .summary b{color:#48c78e}
+
+  /* ============ PAGE: COMPANY ============ */
+  .page{padding:0;max-width:920px;margin:0 auto}
+  .hero{
+    padding:40px 30px 32px;
+    background:
+      radial-gradient(circle at 85% 30%, rgba(74,158,255,.08), transparent 45%),
+      radial-gradient(circle at 15% 90%, rgba(236,178,46,.06), transparent 45%),
+      linear-gradient(180deg, rgba(255,255,255,.02), transparent);
+    border-bottom:1px solid var(--border);
+  }
+  .hero .brand{
+    display:flex;align-items:center;gap:14px;margin-bottom:22px;
+  }
+  .hero .logo{
+    width:48px;height:48px;border-radius:11px;
+    background:linear-gradient(135deg,#4a9eff,#b68cff 60%,#ecb22e);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;color:#0b0d10;font-size:20px;letter-spacing:-.04em;
+    box-shadow:0 6px 18px rgba(74,158,255,.25);
+  }
+  .hero .brand-text .name{font-weight:800;font-size:22px;color:var(--ink-bright);letter-spacing:-.02em}
+  .hero .brand-text .tag{font-size:13px;color:var(--ink-muted);font-family:"JetBrains Mono",monospace;letter-spacing:.05em}
+  .hero h1{
+    font-size:42px;font-weight:800;color:var(--ink-bright);
+    line-height:1.05;letter-spacing:-.025em;margin-bottom:14px;max-width:720px;
+  }
+  .hero h1 em{font-style:normal;color:var(--accent);font-weight:400}
+  .hero .lede{font-size:16px;color:var(--ink);max-width:680px;line-height:1.6}
+
+  .page-section{padding:28px 30px;border-bottom:1px solid var(--border)}
+  .page-section:last-child{border-bottom:none}
+  .section-label{
+    display:flex;align-items:center;gap:10px;
+    font-family:"JetBrains Mono",monospace;font-size:11px;
+    color:var(--ink-muted);letter-spacing:.18em;text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .section-label::before{content:"";width:24px;height:1px;background:var(--accent)}
+  .section-title{
+    font-size:22px;font-weight:700;color:var(--ink-bright);
+    letter-spacing:-.015em;margin-bottom:14px;
+  }
+  .stats{
+    display:grid;grid-template-columns:repeat(4, 1fr);gap:10px;margin-top:18px;
+  }
+  .stat{
+    padding:14px 14px;background:var(--main-2);
+    border:1px solid var(--border);border-radius:6px;
+  }
+  .stat .num{
+    font-size:24px;font-weight:800;color:var(--ink-bright);
+    font-family:"JetBrains Mono",monospace;letter-spacing:-.02em;line-height:1;
+  }
+  .stat .lab{font-size:12px;color:var(--ink-muted);margin-top:4px;line-height:1.3}
+
+  .product-grid{
+    display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;margin-top:8px;
+  }
+  .product{
+    padding:16px;background:var(--main-2);
+    border:1px solid var(--border);border-radius:6px;
+    border-top:2px solid var(--accent);
+  }
+  .product.p2{border-top-color:var(--green)}
+  .product.p3{border-top-color:var(--blue)}
+  .product .n{
+    font-weight:700;color:var(--ink-bright);font-size:15px;margin-bottom:6px;
+  }
+  .product .d{font-size:13.5px;color:var(--ink);line-height:1.5}
+  .product .meta{
+    margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);
+    display:flex;justify-content:space-between;
+    font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-muted);
+  }
+
+  .values{display:grid;grid-template-columns:repeat(2, 1fr);gap:8px;margin-top:8px}
+  .value-row{
+    display:grid;grid-template-columns:40px 1fr;gap:12px;
+    padding:12px;background:rgba(255,255,255,.02);
+    border:1px solid var(--border);border-radius:6px;
+  }
+  .value-row .icn{
+    width:34px;height:34px;border-radius:8px;
+    background:linear-gradient(135deg,#4a9eff,#b68cff);
+    display:flex;align-items:center;justify-content:center;font-size:16px;
+  }
+  .value-row .t{font-weight:700;color:var(--ink-bright);margin-bottom:2px;font-size:14px}
+  .value-row .dsc{font-size:13px;color:var(--ink-muted);line-height:1.45}
+
+  /* ============ PAGE: TRIBE (Spotify Model) ============ */
+  .tribe-wrap{padding:30px}
+  .tribe-intro{
+    padding:20px 22px;margin-bottom:26px;
+    background:rgba(74,158,255,.05);
+    border:1px solid rgba(74,158,255,.2);
+    border-left:3px solid var(--blue);
+    border-radius:6px;
+  }
+  .tribe-intro h2{font-size:19px;color:var(--ink-bright);font-weight:800;margin-bottom:6px;letter-spacing:-.01em}
+  .tribe-intro p{font-size:14px;color:var(--ink);line-height:1.55}
+  .tribe-intro p + p{margin-top:8px}
+
+  /* Ana tribe kutusu - beyaz kart */
+  .tribe-box{
+    background:#ffffff;
+    border:1px solid #e2e4ea;
+    border-radius:14px;
+    padding:30px 26px 34px;
+    color:#1f2330;
+    margin-bottom:24px;
+    position:relative;
+    box-shadow:0 8px 28px rgba(0,0,0,.15);
+  }
+  .tribe-box .tribe-title{
+    text-align:center;
+    font-size:20px;font-weight:900;letter-spacing:.28em;
+    color:#1f2330;margin-bottom:26px;
+    text-transform:uppercase;
+  }
+
+  /* Ana grid: 3 sütun - label, squads, guild */
+  .tribe-grid{
+    display:grid;
+    grid-template-columns:105px 1fr 90px;
+    gap:14px;
+    align-items:start;
+    position:relative;
+  }
+
+  /* Sol: chapter label sütunu */
+  .chapter-labels{
+    display:flex;flex-direction:column;
+    padding-top:96px; /* PO + arrow + oval başlangıcı */
+    gap:0;
+  }
+  .chapter-label{
+    font-weight:800;letter-spacing:.04em;font-size:12px;
+    text-transform:uppercase;text-align:right;
+    padding-right:6px;line-height:1.25;
+  }
+  .chapter-label.c-be{color:#1f9d5e;margin-top:52px}
+  .chapter-label.c-fe{color:#2d72d0;margin-top:40px}
+  .chapter-label.c-qa{color:#c48a0c;margin-top:40px}
+  .chapter-label.c-design{color:#8b6ad4;margin-top:40px}
+
+  /* Orta: 4 squad sütunu */
+  .squads-area{
+    display:grid;grid-template-columns:repeat(4, 1fr);gap:14px;
+    position:relative;
+  }
+
+  /* Chapter bantları - arka plan, absolute positioning squads-area üzerinde */
+  .chapter-band{
+    position:absolute;
+    left:-6px;right:-6px;
+    height:50px;
+    pointer-events:none;
+    z-index:0;
+    border-radius:4px;
+    border-top:2px dashed;
+    border-bottom:2px dashed;
+  }
+  .chapter-band.b1{top:100px;background:rgba(43,172,118,.18);border-color:rgba(31,157,94,.55)}
+  .chapter-band.b2{top:158px;background:rgba(74,158,255,.18);border-color:rgba(45,114,208,.55)}
+  .chapter-band.b3{top:216px;background:rgba(236,178,46,.18);border-color:rgba(196,138,12,.55)}
+  .chapter-band.b4{top:274px;background:rgba(182,140,255,.18);border-color:rgba(139,106,212,.55)}
+
+  .squad-col{
+    display:flex;flex-direction:column;align-items:center;gap:0;
+    position:relative;z-index:1;
+  }
+
+  /* PO figürü - kırmızı kafa */
+  .po-figure{
+    display:flex;flex-direction:column;align-items:center;
+    margin-bottom:4px;position:relative;
+  }
+  .po-head{
+    width:22px;height:22px;border-radius:50%;background:#e53e5a;margin-bottom:2px;
+    box-shadow:0 2px 6px rgba(229,62,90,.25);
+  }
+  .po-body{
+    width:42px;height:38px;background:#e53e5a;
+    border-radius:18px 18px 6px 6px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:9.5px;letter-spacing:.05em;
+    box-shadow:0 2px 6px rgba(229,62,90,.2);
+  }
+  .po-name-label{
+    font-size:10.5px;color:#3d4350;font-weight:700;margin-top:3px;
+    letter-spacing:.02em;
+  }
+
+  /* Yukarı ok */
+  .po-arrow{
+    width:2px;height:14px;background:#b5bac3;
+    position:relative;margin-top:4px;margin-bottom:4px;
+  }
+  .po-arrow::before{
+    content:"";position:absolute;top:-5px;left:50%;transform:translateX(-50%);
+    border-left:5px solid transparent;
+    border-right:5px solid transparent;
+    border-bottom:6px solid #b5bac3;
+  }
+
+  /* Squad ovali - içinde 6 kişi */
+  .squad-oval{
+    background:linear-gradient(180deg, #f3f5f9 0%, #e4e8ef 100%);
+    border:1px solid #c8cdd8;
+    border-radius:50% / 8%;
+    padding:14px 10px 18px;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    width:100%;min-width:110px;
+    box-shadow:inset 0 2px 4px rgba(255,255,255,.8),
+               0 2px 8px rgba(0,0,0,.06);
+    position:relative;
+  }
+  /* Kişi figürleri */
+  .member{
+    width:46px;height:48px;
+    display:flex;flex-direction:column;align-items:center;
+    position:relative;cursor:default;
+  }
+  .member-head{
+    width:18px;height:18px;border-radius:50%;
+    background:#2d3547;margin-bottom:2px;
+  }
+  .member-body{
+    width:32px;height:26px;
+    background:#2d3547;
+    border-radius:14px 14px 5px 5px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:9px;font-weight:700;letter-spacing:-.02em;
+    padding:0 2px;text-align:center;line-height:1;
+  }
+  .member-tooltip{
+    position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);
+    font-size:10px;white-space:nowrap;
+    opacity:0;transition:opacity .15s;pointer-events:none;
+    background:#1f2330;color:#fff;padding:4px 8px;border-radius:4px;
+    z-index:20;
+    box-shadow:0 4px 10px rgba(0,0,0,.2);
+  }
+  .member-tooltip::before{
+    content:"";position:absolute;top:-4px;left:50%;transform:translateX(-50%);
+    border-left:4px solid transparent;
+    border-right:4px solid transparent;
+    border-bottom:4px solid #1f2330;
+  }
+  .member:hover .member-tooltip{opacity:1}
+
+  /* Her squad'ın ayırt edici rengi - member body'leri */
+  .sq-1 .member-head,.sq-1 .member-body{background:#1f9d5e}
+  .sq-2 .member-head,.sq-2 .member-body{background:#2d72d0}
+  .sq-3 .member-head,.sq-3 .member-body{background:#8b6ad4}
+  .sq-4 .member-head,.sq-4 .member-body{background:#c48a0c}
+
+  /* Squad etiketi en altta */
+  .squad-label{
+    margin-top:14px;
+    font-weight:900;font-size:12.5px;color:#1f2330;
+    text-transform:uppercase;letter-spacing:.08em;
+    text-align:center;
+  }
+
+  /* Sağ: Guild blob */
+  .guild-col{
+    display:flex;align-items:center;justify-content:center;
+    padding-top:170px;
+    position:relative;z-index:1;
+  }
+  .guild-blob{
+    width:88px;height:180px;
+    background:linear-gradient(135deg, #fce4f0, #f7cfe0);
+    border:2px dashed #e53e5a;
+    border-radius:45px 18px 45px 18px;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;letter-spacing:.18em;font-size:13px;
+    color:#c2185b;transform:rotate(5deg);
+    box-shadow:0 6px 14px rgba(229,62,90,.18);
+  }
+  .guild-blob span{transform:rotate(-5deg)}
+
+  /* Açıklama kartları */
+  .tribe-legend-cards{
+    display:grid;grid-template-columns:repeat(2, 1fr);gap:10px;margin-top:22px;
+  }
+  .tribe-legend-card{
+    padding:14px 16px;background:var(--main-2);
+    border:1px solid var(--border);border-radius:8px;
+    border-top:3px solid var(--accent);
+  }
+  .tribe-legend-card.t-tribe{border-top-color:#4a9eff}
+  .tribe-legend-card.t-squad{border-top-color:#2bac76}
+  .tribe-legend-card.t-chapter{border-top-color:#ecb22e}
+  .tribe-legend-card.t-guild{border-top-color:#e53e5a}
+  .tribe-legend-card .tlc-head{
+    display:flex;align-items:center;gap:8px;margin-bottom:6px;
+  }
+  .tribe-legend-card .tlc-title{
+    font-weight:800;color:var(--ink-bright);font-size:14px;letter-spacing:.02em;text-transform:uppercase;
+  }
+  .tribe-legend-card .tlc-desc{font-size:13px;color:var(--ink);line-height:1.55}
+  .tribe-legend-card .tlc-ex{
+    margin-top:6px;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-muted);
+  }
+  .tribe-legend-card .tlc-ex b{color:var(--accent);font-weight:600}
+
+  @media (max-width:900px){
+    .tribe-grid{grid-template-columns:1fr;gap:0}
+    .chapter-labels{display:none}
+    .guild-col{display:none;padding-top:0}
+    .chapter-band{display:none}
+    .squads-area{grid-template-columns:repeat(2,1fr)}
+  }
+
+  /* ============ PAGE: KANBAN (ClickUp-style) ============ */
+  .kanban-wrap{padding:22px 22px 40px}
+  .kanban-head{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    flex-wrap:wrap;gap:14px;margin-bottom:16px;padding-bottom:14px;
+    border-bottom:1px solid var(--border);
+  }
+  .kanban-head .kt{font-size:22px;font-weight:800;color:var(--ink-bright);letter-spacing:-.015em;margin-bottom:4px}
+  .kanban-head .ks{font-size:13px;color:var(--ink-muted)}
+  .kanban-toolbar{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  .kanban-toolbar .filter-pill{
+    font-family:"Inter",sans-serif;font-size:12px;padding:5px 10px;
+    border:1px solid var(--border);border-radius:5px;
+    background:var(--main-2);color:var(--ink);cursor:default;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .kanban-toolbar .filter-pill .cnt{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-muted);
+    background:rgba(0,0,0,.25);padding:1px 5px;border-radius:3px;
+  }
+
+  .board{
+    display:grid;grid-template-columns:repeat(4, 1fr);gap:6px;
+  }
+  .col{
+    background:rgba(0,0,0,.1);border:1px solid var(--border);
+    border-radius:6px;padding:0 0 10px;
+    display:flex;flex-direction:column;min-height:520px;overflow:hidden;
+  }
+
+  /* ClickUp-style status bar - colored strip */
+  .col-head{
+    padding:0;
+    background:transparent;
+    border-bottom:1px solid var(--border);
+  }
+  .col-status{
+    display:flex;align-items:center;gap:8px;
+    padding:8px 12px;
+    font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:#ffffff;
+  }
+  .c-backlog .col-status{background:#5c6570;}
+  .c-progress .col-status{background:#3f86ed;}
+  .c-review .col-status{background:#d6a220;}
+  .c-done .col-status{background:#2d9b5e;}
+  .col-status .cname{flex:1}
+  .col-status .count{
+    font-family:"JetBrains Mono",monospace;font-size:11px;
+    background:rgba(0,0,0,.28);padding:2px 8px;border-radius:10px;color:#fff;
+  }
+  .col-status .plus{
+    font-size:16px;line-height:1;color:rgba(255,255,255,.8);
+  }
+
+  .col-body{padding:8px;flex:1;overflow-y:auto}
+
+  /* Card - ClickUp style, user story */
+  .card{
+    background:var(--main-2);border:1px solid var(--border);
+    border-radius:5px;padding:10px 12px;margin-bottom:6px;cursor:pointer;
+    transition:transform .08s, border-color .12s, box-shadow .12s;
+    position:relative;
+  }
+  .card:hover{
+    border-color:var(--blue);
+    box-shadow:0 3px 8px rgba(74,158,255,.12);
+  }
+  .card:active{transform:translateY(0)}
+
+  .card .card-top{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:6px;gap:8px;
+  }
+  .card .cid{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-muted);letter-spacing:.04em;
+  }
+  .card .card-priority{
+    display:inline-block;width:8px;height:8px;border-radius:2px;
+  }
+  .card .card-priority.p1{background:#e01e5a}
+  .card .card-priority.p2{background:#ecb22e}
+  .card .card-priority.p3{background:#4a9eff}
+  .card .card-priority.p4{background:#5c6570}
+
+  .card .ctitle{
+    font-size:13.5px;font-weight:600;color:var(--ink-bright);line-height:1.35;margin-bottom:8px;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  }
+
+  .card .ctags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+  .tagchip{
+    font-family:"JetBrains Mono",monospace;font-size:10px;
+    padding:1px 6px;border-radius:3px;font-weight:500;
+    border:1px solid var(--border-2);
+  }
+  .t-be{color:#48c78e;background:rgba(72,199,142,.08);border-color:rgba(72,199,142,.3)}
+  .t-fe{color:#4a9eff;background:rgba(74,158,255,.08);border-color:rgba(74,158,255,.3)}
+  .t-sre{color:#e01e5a;background:rgba(224,30,90,.08);border-color:rgba(224,30,90,.3)}
+  .t-ml{color:#b68cff;background:rgba(182,140,255,.08);border-color:rgba(182,140,255,.3)}
+  .t-qa{color:#ff9bd2;background:rgba(255,155,210,.08);border-color:rgba(255,155,210,.3)}
+  .t-ux{color:#6fe4d8;background:rgba(111,228,216,.08);border-color:rgba(111,228,216,.3)}
+  .t-data{color:#ecb22e;background:rgba(236,178,46,.08);border-color:rgba(236,178,46,.3)}
+  .t-p1{color:var(--red);background:rgba(224,30,90,.08);border-color:rgba(224,30,90,.3);font-weight:700}
+  .t-p2{color:var(--accent);background:rgba(236,178,46,.08);border-color:rgba(236,178,46,.3)}
+  .t-bug{color:#ff6a3d;background:rgba(255,106,61,.08);border-color:rgba(255,106,61,.3)}
+  .t-feat{color:#4a9eff;background:rgba(74,158,255,.08);border-color:rgba(74,158,255,.3)}
+  .t-tech{color:#a8b0bd;background:rgba(168,176,189,.08);border-color:rgba(168,176,189,.3)}
+
+  .card .cfoot{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:8px;border-top:1px dashed var(--border);gap:8px;
+  }
+  .card .cfoot-left{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-muted)}
+  .card .cfoot-left svg{opacity:.7}
+  .card .cassign{
+    width:22px;height:22px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:9.5px;font-weight:700;color:#0b0d10;letter-spacing:-.02em;
+  }
+  .card .cpoints{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-muted);
+    padding:1px 6px;background:rgba(0,0,0,.25);border-radius:3px;
+  }
+  .card .cpoints b{color:var(--ink);font-weight:600}
+
+  .card.done-card{opacity:.72}
+  .card.done-card .ctitle{text-decoration:line-through;text-decoration-color:rgba(255,255,255,.3)}
+
+  /* ============ MODAL ============ */
+  .modal-backdrop{
+    display:none;position:fixed;inset:0;
+    background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
+    z-index:100;align-items:flex-start;justify-content:center;
+    padding:40px 20px;overflow-y:auto;
+  }
+  .modal-backdrop.open{display:flex;animation:fadeIn .15s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+  .modal{
+    background:var(--main);
+    border:1px solid var(--border);
+    border-radius:10px;
+    width:100%;max-width:820px;
+    max-height:calc(100vh - 80px);
+    display:flex;flex-direction:column;
+    box-shadow:0 20px 60px rgba(0,0,0,.6);
+    animation:slideUp .2s ease;
+  }
+  @keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+  .modal-head{
+    padding:16px 22px;
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    position:sticky;top:0;background:var(--main);z-index:2;border-radius:10px 10px 0 0;
+  }
+  .modal-head-left{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .modal-head .mid{
+    font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-muted);letter-spacing:.04em;
+  }
+  .modal-head .status-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:4px 10px;border-radius:4px;
+    font-weight:700;font-size:10.5px;color:#fff;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .modal-head .status-pill.backlog{background:#5c6570}
+  .modal-head .status-pill.progress{background:#3f86ed}
+  .modal-head .status-pill.review{background:#d6a220}
+  .modal-head .status-pill.done{background:#2d9b5e}
+  .modal-close{
+    background:transparent;border:1px solid var(--border);
+    color:var(--ink-muted);font-size:18px;line-height:1;
+    width:32px;height:32px;border-radius:5px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:color .1s, border-color .1s;
+  }
+  .modal-close:hover{color:var(--ink-bright);border-color:var(--border-2)}
+
+  .modal-body{
+    padding:22px 26px 30px;
+    overflow-y:auto;
+    display:grid;
+    grid-template-columns:1fr 220px;
+    gap:26px;
+  }
+
+  .modal-main .mtitle{
+    font-size:20px;font-weight:800;color:var(--ink-bright);
+    letter-spacing:-.015em;margin-bottom:16px;line-height:1.3;
+  }
+
+  .story-block{
+    background:rgba(74,158,255,.06);
+    border-left:3px solid var(--blue);
+    padding:12px 16px;border-radius:0 6px 6px 0;margin-bottom:20px;
+    font-size:14.5px;color:var(--ink);line-height:1.6;
+  }
+  .story-block .story-label{
+    display:block;font-family:"JetBrains Mono",monospace;font-size:10.5px;
+    color:var(--blue);letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;font-weight:600;
+  }
+  .story-block b{color:var(--ink-bright)}
+
+  .modal-section{margin-bottom:22px}
+  .modal-section h4{
+    font-size:13px;font-weight:800;color:var(--ink-bright);
+    letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .modal-section h4::before{
+    content:"";width:3px;height:14px;background:var(--accent);border-radius:2px;
+  }
+  .modal-section p{font-size:14px;color:var(--ink);line-height:1.6;margin-bottom:8px}
+  .modal-section ul{list-style:none;padding:0;margin:0}
+  .modal-section ul li{
+    padding:8px 12px;background:var(--main-2);
+    border:1px solid var(--border);border-radius:5px;margin-bottom:6px;
+    font-size:13.5px;color:var(--ink);line-height:1.5;
+    display:flex;align-items:flex-start;gap:10px;
+  }
+  .modal-section ul li::before{
+    content:"☐";color:var(--ink-muted);font-size:14px;flex-shrink:0;
+  }
+  .modal-section ul li.done::before{content:"☑";color:var(--green)}
+
+  .activity-item{
+    display:grid;grid-template-columns:26px 1fr;gap:10px;
+    padding:8px 0;border-bottom:1px dashed var(--border);
+    font-size:13px;
+  }
+  .activity-item:last-child{border-bottom:none}
+  .activity-dot{
+    width:24px;height:24px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;color:#0b0d10;font-weight:700;
+  }
+  .activity-content{color:var(--ink);line-height:1.5}
+  .activity-content b{color:var(--ink-bright)}
+  .activity-content .time{display:block;font-size:11px;color:var(--ink-muted);margin-top:2px;font-family:"JetBrains Mono",monospace}
+
+  /* Sidebar of modal - right side */
+  .modal-side{
+    padding:0;
+  }
+  .side-block{
+    padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--border);
+  }
+  .side-block:last-child{border-bottom:none;margin-bottom:0}
+  .side-label{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-muted);
+    letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;
+  }
+  .side-value{font-size:13.5px;color:var(--ink-bright);font-weight:600;line-height:1.4}
+  .side-assignee{
+    display:flex;align-items:center;gap:8px;
+  }
+  .side-assignee .cassign{
+    width:28px;height:28px;border-radius:50%;font-size:11px;
+    display:flex;align-items:center;justify-content:center;font-weight:700;color:#0b0d10;
+  }
+
+  @media (max-width:900px){
+    .modal-body{grid-template-columns:1fr}
+    .modal-side{border-top:1px solid var(--border);padding-top:16px}
+  }
+
+  @media (max-width:900px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .product-grid{grid-template-columns:1fr}
+    .values{grid-template-columns:1fr}
+    .squad-row{grid-template-columns:repeat(2,1fr)}
+    .chapters-grid{grid-template-columns:repeat(2,1fr)}
+    .board{grid-template-columns:1fr 1fr;gap:8px}
+  }
+  @media (max-width:800px){
+    .app{grid-template-columns:200px 1fr}
+    .solution-wrap{padding:8px 14px 30px}
+    .decode-row{grid-template-columns:1fr;gap:4px}
+    .msg{padding:8px 14px}
+    .hero h1{font-size:32px}
+    .board{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="workspace">
+      <div class="workspace-name">Lightning Talks</div>
+      <div class="workspace-badge"></div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label big">Tanı</div>
+      <button class="channel big active" data-tab="c1">
+        <span class="hash">🏢</span>
+        <span class="label">Şirket</span>
+        <span class="num">A</span>
+      </button>
+      <button class="channel big" data-tab="c2">
+        <span class="hash">🧬</span>
+        <span class="label">Tribe Yapısı</span>
+        <span class="num">B</span>
+      </button>
+      <button class="channel big" data-tab="c3">
+        <span class="hash">📋</span>
+        <span class="label">Kanban Board </span>
+        <span class="num">C</span>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Sohbetler</div>
+      <button class="channel" data-tab="1">
+        <span class="hash">#</span>
+        <span class="label">pod-checkout-sync</span>
+        <span class="num">01</span>
+      </button>
+      <button class="channel" data-tab="2">
+        <span class="hash">#</span>
+        <span class="label">payments-squad</span>
+        <span class="num">02</span>
+      </button>
+      <button class="channel" data-tab="3">
+        <span class="hash">#</span>
+        <span class="label">ml-platform-squad</span>
+        <span class="num">03</span>
+      </button>
+      <button class="channel" data-tab="4">
+        <span class="hash">#</span>
+        <span class="label">arch-rfc-review</span>
+        <span class="num">04</span>
+      </button>
+      <button class="channel" data-tab="5">
+        <span class="hash">#</span>
+        <span class="label">daily-standup</span>
+        <span class="num">05</span>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Çözüm</div>
+      <button class="channel solution" data-tab="6">
+        <span class="hash">🔑</span>
+        <span class="label">ne demek istediler?</span>
+        <span class="num">06</span>
+      </button>
+    </div>
+
+    <div class="sidebar-foot">
+      Divizyon · Başlangıç Rampası
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- header (dynamic) -->
+    <div class="main-head">
+      <div>
+        <div class="title">
+          <span class="h" id="head-hash">🏢</span>
+          <span class="t" id="head-title">şirket</span>
+        </div>
+        <div class="sub" id="head-sub">
+          <span>Nexora Payments · ne yaparız, nasıl çalışırız</span>
+        </div>
+      </div>
+      <div class="right" id="head-meta">A / 3 tanı</div>
+    </div>
+
+    <div class="main-body" id="main-body">
+
+      <!-- =========== PAGE C1 · ŞİRKET =========== -->
+      <section class="view active" data-view="c1">
+        <div class="page">
+          <div class="hero">
+            <div class="brand">
+              <div class="logo">AÖ</div>
+              <div class="brand-text">
+                <div class="name">Akçe Ödeme Sistemleri</div>
+                <div class="tag">kuruluş 2019 · İstanbul · Ankara</div>
+              </div>
+            </div>
+            <h1>Bir <em>ödeme altyapısı</em> değil, ticaretin <em>omurgası</em>.</h1>
+            <p class="lede">
+              Akçe, e-ticaret ve dijital hizmet şirketlerinin arkasında sessizce çalışan bir <b>ödeme altyapı sağlayıcısıdır</b>. Binlerce işyerinin sepet ekranındaki "Ödeme Yap" butonuna basıldığında devreye giren; kart bilgisini güvenle taşıyan, dolandırıcılığı anında yakalayan ve bankayla pazarlık eden katman biziz.
+            </p>
+          </div>
+
+          <div class="page-section">
+            <div class="section-label">Ne yapıyoruz?</div>
+            <div class="section-title">Üç ana hat</div>
+            <div class="product-grid">
+              <div class="product">
+                <div class="n">Checkout Gateway</div>
+                <div class="d">İşyerlerinin sitesine entegre edilen ödeme sayfası. Kart, Apple Pay, havale, BNPL — hepsi tek kapıdan. Günde 2.8M işlem.</div>
+                <div class="meta"><span>ana ürün</span><span>v4.2</span></div>
+              </div>
+              <div class="product p2">
+                <div class="n">Fraud Shield</div>
+                <div class="d">Makine öğrenmesi tabanlı dolandırıcılık tespit motoru. Her işlemi 80ms'de skorlar, şüpheliyi durdurur.</div>
+                <div class="meta"><span>akıllı katman</span><span>model v3</span></div>
+              </div>
+              <div class="product p3">
+                <div class="n">Merchant Console</div>
+                <div class="d">İşyerlerinin gelirlerini, iade taleplerini, raporlarını yönettiği panel. İşin görünen yüzü.</div>
+                <div class="meta"><span>yönetim paneli</span><span>v2.8</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="page-section">
+            <div class="section-label">Rakamlarla</div>
+            <div class="stats">
+              <div class="stat">
+                <div class="num">2.8M</div>
+                <div class="lab">günlük işlem hacmi</div>
+              </div>
+              <div class="stat">
+                <div class="num">14K</div>
+                <div class="lab">aktif işyeri</div>
+              </div>
+              <div class="stat">
+                <div class="num">99.97%</div>
+                <div class="lab">servis erişilebilirliği</div>
+              </div>
+              <div class="stat">
+                <div class="num">180</div>
+                <div class="lab">toplam çalışan</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="page-section">
+            <div class="section-label">Nasıl çalışırız</div>
+            <div class="section-title">Değerlerimiz</div>
+            <div class="values">
+              <div class="value-row">
+                <div class="icn">🧭</div>
+                <div>
+                  <div class="t">Sebebi bul, belirtiyi değil</div>
+                  <div class="dsc">Acil şikayete hızlı yama atmak kolay. Biz önce kök sebebi buluruz, sonra çözeriz. Acele her zaman hız değildir.</div>
+                </div>
+              </div>
+              <div class="value-row">
+                <div class="icn">🤝</div>
+                <div>
+                  <div class="t">Kimseyi suçlama kültürü</div>
+                  <div class="dsc">Bir şey bozulduğunda "kim yaptı?" yerine "süreç nasıl izin verdi?" diye sorarız. Sistem insanı korur, insan sistemi besler.</div>
+                </div>
+              </div>
+              <div class="value-row">
+                <div class="icn">💬</div>
+                <div>
+                  <div class="t">Yazı, toplantıdan değerlidir</div>
+                  <div class="dsc">Kararlarımızı, tartışmalarımızı yazıya dökeriz. 6 ay sonra "niye böyle yaptık?" sorusunun cevabı hazır olmalı.</div>
+                </div>
+              </div>
+              <div class="value-row">
+                <div class="icn">🪜</div>
+                <div>
+                  <div class="t">Yavaşça, birlikte</div>
+                  <div class="dsc">Tek seferde büyük yeniden yazım riskli. Biz yavaş yavaş ilerler, her adımda öğreniriz. Sabır hız yaratır.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="page-section">
+            <div class="section-label">Neden Nexora?</div>
+            <div class="section-title">Sessizce çalışırız, gürültüsüzce büyürüz</div>
+            <p style="color:var(--ink);font-size:15px;line-height:1.7;max-width:720px">
+              Bir ödeme sistemi fark edildiğinde, işler yolunda gitmiyor demektir. Bizim başarımız, kullanıcıların Akçe'yi hiç hatırlamamasıdır. İşyeri sahibi sabah uyanıp gelirini gördüğünde, müşteri kartı çekmeden önce hiç düşünmeden tıkladığında — orada biziz. Görünmez ama güvenilir. Üstelik işimizi yaparken kendi ekibimize de aynı özeni gösteriyoruz: net roller, açık iletişim, kimseyi sıkıştırmayan bir temponun içinde büyüyen bir şirketiz.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========== PAGE C2 · TRIBE YAPISI (Spotify Modeli) =========== -->
+      <section class="view" data-view="c2">
+        <div class="tribe-wrap">
+          <div class="tribe-intro">
+            <h2>🧬 Spotify Modeli · Ödeme Omurgası Tribe</h2>
+            <p>Akçe'de Spotify'ın ortaya attığı ekip yapılanmasını kullanıyoruz. Aşağıdaki görsel, <b>Ödeme Omurgası Tribe</b>'ını gösteriyor: <b>4 squad</b> (dikey ovaller), her birinde <b>PO</b> ve 6 çalışan.</p>
+            <p>Yatay yeşil/mavi/sarı/mor bantlar <b>Chapter</b>'lardır — yani "tüm backend'ciler", "tüm frontend'ciler", "tüm QA'cılar" gibi uzmanlık topluluğu. Sağdaki pembe blob ise <b>Guild</b>; farklı squad'lardan insanların ortak ilgi alanında buluştuğu gönüllü topluluk.</p>
+          </div>
+
+          <!-- Tribe ana görseli -->
+          <div class="tribe-box">
+            <div class="tribe-title">Tribe</div>
+
+            <div class="tribe-grid">
+
+              <!-- SOL: Chapter etiketleri -->
+              <div class="chapter-labels">
+                <div class="chapter-label c-be">Backend<br>Chapter</div>
+                <div class="chapter-label c-fe">Frontend<br>Chapter</div>
+                <div class="chapter-label c-qa">QA<br>Chapter</div>
+                <div class="chapter-label c-design">Design<br>Chapter</div>
+              </div>
+
+              <!-- ORTA: 4 Squad + arkada Chapter bantları -->
+              <div class="squads-area">
+
+                <!-- Chapter bantları arka planda -->
+                <div class="chapter-band b1"></div>
+                <div class="chapter-band b2"></div>
+                <div class="chapter-band b3"></div>
+                <div class="chapter-band b4"></div>
+
+                <!-- Squad 1: Checkout -->
+                <div class="squad-col sq-1">
+                  <div class="po-figure">
+                    <div class="po-head"></div>
+                    <div class="po-body">PO</div>
+                    <div class="po-name-label">Elif</div>
+                  </div>
+                  <div class="po-arrow"></div>
+                  <div class="squad-oval">
+                    <div class="member"><div class="member-head"></div><div class="member-body">Deniz</div><div class="member-tooltip">Deniz · Backend</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Canan</div><div class="member-tooltip">Canan · Frontend Lead</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Nazlı</div><div class="member-tooltip">Nazlı · QA Lead</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Leyla</div><div class="member-tooltip">Leyla · Designer</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Emre</div><div class="member-tooltip">Emre · Backend</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Selin</div><div class="member-tooltip">Selin · Frontend</div></div>
+                  </div>
+                  <div class="squad-label">Checkout</div>
+                </div>
+
+                <!-- Squad 2: Payments Core -->
+                <div class="squad-col sq-2">
+                  <div class="po-figure">
+                    <div class="po-head"></div>
+                    <div class="po-body">PO</div>
+                    <div class="po-name-label">Sinan</div>
+                  </div>
+                  <div class="po-arrow"></div>
+                  <div class="squad-oval">
+                    <div class="member"><div class="member-head"></div><div class="member-body">Kaya</div><div class="member-tooltip">Kaya · Senior Backend</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Berk</div><div class="member-tooltip">Berk · Frontend</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Derya</div><div class="member-tooltip">Derya · QA</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Pınar</div><div class="member-tooltip">Pınar · Designer</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Onur</div><div class="member-tooltip">Onur · Backend</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Zeynep</div><div class="member-tooltip">Zeynep · Frontend</div></div>
+                  </div>
+                  <div class="squad-label">Payments Core</div>
+                </div>
+
+                <!-- Squad 3: ML Platform -->
+                <div class="squad-col sq-3">
+                  <div class="po-figure">
+                    <div class="po-head"></div>
+                    <div class="po-body">PO</div>
+                    <div class="po-name-label">Hande</div>
+                  </div>
+                  <div class="po-arrow"></div>
+                  <div class="squad-oval">
+                    <div class="member"><div class="member-head"></div><div class="member-body">Aslı</div><div class="member-tooltip">Aslı · ML Engineer</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Tolga</div><div class="member-tooltip">Tolga · Data Engineer</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">İpek</div><div class="member-tooltip">İpek · QA</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Kerem</div><div class="member-tooltip">Kerem · UX Researcher</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Cem</div><div class="member-tooltip">Cem · ML Engineer</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Yağız</div><div class="member-tooltip">Yağız · Backend</div></div>
+                  </div>
+                  <div class="squad-label">ML Platform</div>
+                </div>
+
+                <!-- Squad 4: Platform / SRE -->
+                <div class="squad-col sq-4">
+                  <div class="po-figure">
+                    <div class="po-head"></div>
+                    <div class="po-body">PO</div>
+                    <div class="po-name-label">Volkan</div>
+                  </div>
+                  <div class="po-arrow"></div>
+                  <div class="squad-oval">
+                    <div class="member"><div class="member-head"></div><div class="member-body">Burak</div><div class="member-tooltip">Burak · SRE Lead</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Mert</div><div class="member-tooltip">Mert · Backend Lead</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Mine</div><div class="member-tooltip">Mine · QA</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Ayşe</div><div class="member-tooltip">Ayşe · UX Designer</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Ekrem</div><div class="member-tooltip">Ekrem · SRE</div></div>
+                    <div class="member"><div class="member-head"></div><div class="member-body">Göksu</div><div class="member-tooltip">Göksu · DevOps</div></div>
+                  </div>
+                  <div class="squad-label">Platform / SRE</div>
+                </div>
+
+              </div>
+
+              <!-- SAĞ: Guild blob -->
+              <div class="guild-col">
+                <div class="guild-blob">
+                  <span>GUILD</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Açıklama kartları -->
+          <div class="tribe-legend-cards">
+            <div class="tribe-legend-card t-tribe">
+              <div class="tlc-head">
+                <div class="tlc-title">🏛 Tribe</div>
+              </div>
+              <div class="tlc-desc">Aynı stratejik hedefe yürüyen squad'ların üst çatısı. Bir nevi "aile." En fazla ~100 kişi, yoksa bağ kopar.</div>
+              <div class="tlc-ex">örnek: <b>Ödeme Omurgası Tribe</b> — 4 squad, 32 kişi</div>
+            </div>
+
+            <div class="tribe-legend-card t-squad">
+              <div class="tlc-head">
+                <div class="tlc-title">🧑‍🤝‍🧑 Squad</div>
+              </div>
+              <div class="tlc-desc">5-9 kişilik mini startup. Bir ürüne veya özelliğe sahip. İçinde BE, FE, QA, Tasarımcı bulunur. Günlük işin merkezi.</div>
+              <div class="tlc-ex">örnek: <b>Checkout Squad</b> — PO Elif + 6 kişi</div>
+            </div>
+
+            <div class="tribe-legend-card t-chapter">
+              <div class="tlc-head">
+                <div class="tlc-title">📚 Chapter</div>
+              </div>
+              <div class="tlc-desc">Aynı uzmanlıktaki insanların yatay topluluğu. Farklı squad'larda çalışan tüm backend'ciler bir Chapter. Teknik standartlar ve kariyer gelişimi burada.</div>
+              <div class="tlc-ex">örnek: <b>Backend Chapter</b> — Lead: Mert, 14 kişi</div>
+            </div>
+
+            <div class="tribe-legend-card t-guild">
+              <div class="tlc-head">
+                <div class="tlc-title">🎸 Guild</div>
+              </div>
+              <div class="tlc-desc">Tribe'ları da aşan, şirket çapı gönüllü ilgi topluluğu. "Güvenlik seven herkes" gibi. Resmi olmayan ama güçlü bir bilgi ağı.</div>
+              <div class="tlc-ex">örnek: <b>Ödeme Güvenliği Guild</b> — her tribe'dan üyeler</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========== PAGE C3 · KANBAN (ClickUp-style) =========== -->
+      <section class="view" data-view="c3">
+        <div class="kanban-wrap">
+          <div class="kanban-head">
+            <div>
+              <div class="kt">📋 Checkout Squad · Sprint Board</div>
+              <div class="ks">Sprint 34 · 5. gün · 9 gün kaldı · PO: Elif</div>
+            </div>
+          </div>
+
+          <div class="kanban-toolbar">
+            <span class="filter-pill">👥 Squad: Checkout</span>
+            <span class="filter-pill">🎯 Sprint 34 <span class="cnt">23</span></span>
+            <span class="filter-pill">📊 Toplam SP <span class="cnt">74</span></span>
+            <span class="filter-pill">⚡ Burn <span class="cnt">28 / 74</span></span>
+            <span class="filter-pill" style="color:#e01e5a">🔴 P1 <span class="cnt">3</span></span>
+          </div>
+
+          <div class="board">
+
+            <!-- BACKLOG -->
+            <div class="col c-backlog">
+              <div class="col-head">
+                <div class="col-status">
+                  <span class="cname">📥 Yapılacak</span>
+                  <span class="count">11</span>
+                  <span class="plus">+</span>
+                </div>
+              </div>
+              <div class="col-body">
+
+                <div class="card" data-card-id="PAY-2091">
+                  <div class="card-top"><span class="cid">PAY-2091</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">Kullanıcı olarak, ödeme başarısız olduğunda neden başarısız olduğunu öğrenmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-fe">FE</span><span class="tagchip t-feat">FEAT</span><span class="tagchip t-p2">P2</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 4</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-canan">CD</div><div class="cpoints"><b>5</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2094">
+                  <div class="card-top"><span class="cid">PAY-2094</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">İşyeri olarak, 3DS iptal edildiğinde müşterinin neden vazgeçtiğini görmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-be">BE</span><span class="tagchip t-feat">FEAT</span><span class="tagchip t-p2">P2</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 2</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-kaya">KT</div><div class="cpoints"><b>3</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2096">
+                  <div class="card-top"><span class="cid">PAY-2096</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">İşyeri sahibi olarak, iade oranımı haftalık raporda görmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-fe">FE</span><span class="tagchip t-feat">FEAT</span><span class="tagchip t-p2">P2</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 7</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-canan">CD</div><div class="cpoints"><b>8</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2098">
+                  <div class="card-top"><span class="cid">PAY-2098</span><span class="card-priority p3" title="P3"></span></div>
+                  <div class="ctitle">Yabancı kullanıcı olarak, çevirisi olmayan metinleri İngilizce görmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-fe">FE</span><span class="tagchip t-tech">TECH</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 1</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-canan">CD</div><div class="cpoints"><b>2</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2102">
+                  <div class="card-top"><span class="cid">PAY-2102</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">Görme engelli kullanıcı olarak, ödeme ekranını ekran okuyucuyla tam kullanabilmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-ux">UX</span><span class="tagchip t-feat">FEAT</span><span class="tagchip t-p2">P2</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 3</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-leyla">LS</div><div class="cpoints"><b>5</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2105">
+                  <div class="card-top"><span class="cid">PAY-2105</span><span class="card-priority p3" title="P3"></span></div>
+                  <div class="ctitle">Kullanıcı olarak, kaydettiğim kartlarımı ödeme ekranında tek tıkla seçebilmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-fe">FE</span><span class="tagchip t-feat">FEAT</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 5</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-canan">CD</div><div class="cpoints"><b>8</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2108">
+                  <div class="card-top"><span class="cid">PAY-2108</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">İşyeri sahibi olarak, sahte işlemleri anlık olarak bildirim olarak almak istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-be">BE</span><span class="tagchip t-ml">ML</span><span class="tagchip t-feat">FEAT</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 2</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-kaya">KT</div><div class="cpoints"><b>5</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2110">
+                  <div class="card-top"><span class="cid">PAY-2110</span><span class="card-priority p3" title="P3"></span></div>
+                  <div class="ctitle">QA olarak, her push'ta regression suite'in otomatik çalışmasını istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-qa">QA</span><span class="tagchip t-tech">TECH</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 0</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-nazli">NÇ</div><div class="cpoints"><b>3</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2112">
+                  <div class="card-top"><span class="cid">PAY-2112</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">Kullanıcı olarak, ödeme geçmişimi PDF olarak indirip muhasebeme iletebilmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-fe">FE</span><span class="tagchip t-be">BE</span><span class="tagchip t-feat">FEAT</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 1</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-canan">CD</div><div class="cpoints"><b>5</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2115">
+                  <div class="card-top"><span class="cid">PAY-2115</span><span class="card-priority p3" title="P3"></span></div>
+                  <div class="ctitle">Geliştirici olarak, idempotency kütüphanesini npm paketi olarak paylaşılabilir yapmak istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-be">BE</span><span class="tagchip t-tech">TECH</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 2</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-deniz">DY</div><div class="cpoints"><b>3</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2117">
+                  <div class="card-top"><span class="cid">PAY-2117</span><span class="card-priority p4" title="P4"></span></div>
+                  <div class="ctitle">İşyeri olarak, ödeme sayfamın rengini kendi markamla eşleştirmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-ux">UX</span><span class="tagchip t-fe">FE</span><span class="tagchip t-feat">FEAT</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 0</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-leyla">LS</div><div class="cpoints"><b>8</b> sp</div></div></div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- IN PROGRESS -->
+            <div class="col c-progress">
+              <div class="col-head">
+                <div class="col-status">
+                  <span class="cname">⚡ Yapılıyor</span>
+                  <span class="count">4</span>
+                  <span class="plus">+</span>
+                </div>
+              </div>
+              <div class="col-body">
+
+                <div class="card" data-card-id="PAY-2089">
+                  <div class="card-top"><span class="cid">PAY-2089</span><span class="card-priority p1" title="P1"></span></div>
+                  <div class="ctitle">Kullanıcı olarak, bir ödeme yapmayı denediğimde sadece bir kez ücretlendirilmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-be">BE</span><span class="tagchip t-bug">BUG</span><span class="tagchip t-p1">P1</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 12</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-deniz">DY</div><div class="cpoints"><b>8</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2090">
+                  <div class="card-top"><span class="cid">PAY-2090</span><span class="card-priority p1" title="P1"></span></div>
+                  <div class="ctitle">Sistem olarak, banka onayı gecikirse bile mükerrer tahsilat yapmamalıyım</div>
+                  <div class="ctags"><span class="tagchip t-sre">SRE</span><span class="tagchip t-tech">TECH</span><span class="tagchip t-p1">P1</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 9</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-burak">BÖ</div><div class="cpoints"><b>5</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2093">
+                  <div class="card-top"><span class="cid">PAY-2093</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">QA olarak, uç durum senaryolarımı otomatik test zincirine eklemek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-qa">QA</span><span class="tagchip t-tech">TECH</span><span class="tagchip t-p2">P2</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 5</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-nazli">NÇ</div><div class="cpoints"><b>3</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2095">
+                  <div class="card-top"><span class="cid">PAY-2095</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">Kullanıcı olarak, ödeme işlenirken "işleniyor" uyarısı görüp panik olmamak istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-ux">UX</span><span class="tagchip t-feat">FEAT</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 6</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-leyla">LS</div><div class="cpoints"><b>3</b> sp</div></div></div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- IN REVIEW -->
+            <div class="col c-review">
+              <div class="col-head">
+                <div class="col-status">
+                  <span class="cname">👀 İnceleme</span>
+                  <span class="count">3</span>
+                  <span class="plus">+</span>
+                </div>
+              </div>
+              <div class="col-body">
+
+                <div class="card" data-card-id="PAY-2088">
+                  <div class="card-top"><span class="cid">PAY-2088</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">Geliştirici olarak, testlerim birbirine karışmadan çalışsın istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-be">BE</span><span class="tagchip t-tech">TECH</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 8</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-deniz">DY</div><div class="cpoints"><b>5</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2086">
+                  <div class="card-top"><span class="cid">PAY-2086</span><span class="card-priority p1" title="P1"></span></div>
+                  <div class="ctitle">Nöbetçi olarak, gece yarısı veri akışı bozulursa telefonum çalsın istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-sre">SRE</span><span class="tagchip t-bug">BUG</span><span class="tagchip t-p1">P1</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 11</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-tolga">TB</div><div class="cpoints"><b>3</b> sp</div></div></div>
+                </div>
+
+                <div class="card" data-card-id="PAY-2087">
+                  <div class="card-top"><span class="cid">PAY-2087</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">ML Mühendisi olarak, model bozulduğunda eski sürüme güvenle geri dönebileceğim bir rehbere sahip olmak istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-ml">ML</span><span class="tagchip t-tech">TECH</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 4</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-asli">AY</div><div class="cpoints"><b>2</b> sp</div></div></div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- DONE -->
+            <div class="col c-done">
+              <div class="col-head">
+                <div class="col-status">
+                  <span class="cname">✅ Bitti</span>
+                  <span class="count">5</span>
+                  <span class="plus">+</span>
+                </div>
+              </div>
+              <div class="col-body">
+
+                <div class="card done-card" data-card-id="PAY-2080">
+                  <div class="card-top"><span class="cid">PAY-2080</span><span class="card-priority p1" title="P1"></span></div>
+                  <div class="ctitle">ML Mühendisi olarak, bozulan modeli acilen eski sürüme çekmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-ml">ML</span><span class="tagchip t-bug">BUG</span><span class="tagchip t-p1">P1</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 15</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-asli">AY</div><div class="cpoints"><b>3</b> sp</div></div></div>
+                </div>
+
+                <div class="card done-card" data-card-id="PAY-2081">
+                  <div class="card-top"><span class="cid">PAY-2081</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">Veri Mühendisi olarak, takılan veri işini manuel yeniden başlatabilmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-data">DATA</span><span class="tagchip t-tech">TECH</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 3</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-tolga">TB</div><div class="cpoints"><b>1</b> sp</div></div></div>
+                </div>
+
+                <div class="card done-card" data-card-id="PAY-2082">
+                  <div class="card-top"><span class="cid">PAY-2082</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">Takım olarak, olan olaydan ders çıkarmak için yazılı bir rapor istiyoruz</div>
+                  <div class="ctags"><span class="tagchip t-ml">ML</span><span class="tagchip t-tech">TECH</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 6</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-asli">AY</div><div class="cpoints"><b>2</b> sp</div></div></div>
+                </div>
+
+                <div class="card done-card" data-card-id="PAY-2083">
+                  <div class="card-top"><span class="cid">PAY-2083</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">Kullanıcı olarak, iade sürecinde aynı işlem iki kez yansıtılmasın istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-be">BE</span><span class="tagchip t-bug">BUG</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 9</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-kaya">KT</div><div class="cpoints"><b>5</b> sp</div></div></div>
+                </div>
+
+                <div class="card done-card" data-card-id="PAY-2085">
+                  <div class="card-top"><span class="cid">PAY-2085</span><span class="card-priority p2" title="P2"></span></div>
+                  <div class="ctitle">Geliştirici olarak, sipariş servisinin parçalarını ayrı modüller halinde görmek istiyorum</div>
+                  <div class="ctags"><span class="tagchip t-be">BE</span><span class="tagchip t-tech">TECH</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 7</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-burak">BÖ</div><div class="cpoints"><b>3</b> sp</div></div></div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- =========== TAB 1 =========== -->
+      <section class="view" data-view="1">
+        <div class="day-divider"><span>Salı, sabah</span></div>
+
+        <div class="msg">
+          <div class="avatar a-elif">EA</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Elif</span>
+              <span class="role">Product Owner</span>
+              <span class="time">09:42</span>
+            </div>
+            <div class="msg-body">
+              <p>Günaydın. Müşteri tarafından bir şikayet geldi: ödeme ekranında bazı kullanıcılardan <b>iki kez para çekiliyormuş</b>. Son 2 günde 4 kayıt var.</p>
+              <p>Bunu önümüzdeki sprint'e acil olarak almamız lazım. Müsaitlik var mı? <span class="mention">@mert</span> <span class="mention">@canan</span> <span class="mention">@burak</span></p>
+            </div>
+            <div class="reactions"><span class="rx">👀 <b>3</b></span><span class="rx">🔥 <b>2</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-mert">MK</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Mert</span>
+              <span class="role">Backend Chapter Lead</span>
+              <span class="time">09:47</span>
+            </div>
+            <div class="msg-body">
+              <p>Günaydın. Acele etmeden önce sebebi bulalım, yoksa yanlış yeri tamir ederiz.</p>
+              <p>İlk tahminim: ödeme isteği yarıda kalınca sistem otomatik <b>tekrar deniyor</b> ama "bu isteği daha önce yapmıştık" kontrolü çalışmıyor. Yani aynı ödeme iki kez kayıt oluyor. Bu sadece küçük bir düzeltme değil, <code>idempotency</code> denen güvenlik mekanizmasının kendisi bozuk olabilir.</p>
+            </div>
+            <div class="reactions"><span class="rx">🎯 <b>4</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-burak">BÖ</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Burak</span>
+              <span class="role">SRE / Platform Lead</span>
+              <span class="time">09:51</span>
+            </div>
+            <div class="msg-body">
+              <p>Mert haklı. Ben grafiklere baktım, <b>son hafta 4 kat artmış</b> bu sorun. Ama bence asıl problem daha derinde: banka tarafından dönen onay mesajları saniyede 8-10 kez geliyor, bizim sistemin buna hazırlığı yok.</p>
+              <p>Yani biz backend'i düzeltsek bile, bankayla yaptığımız anlaşmayı da güncellememiz gerekebilir. Hukuk ekibine bir haber versene <span class="mention">@elif</span>.</p>
+            </div>
+            <div class="reactions"><span class="rx">📊 <b>3</b></span><span class="rx">🚨 <b>2</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-canan">CD</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Canan</span>
+              <span class="role">Frontend Chapter Lead</span>
+              <span class="time">09:58</span>
+            </div>
+            <div class="msg-body">
+              <p>Frontend tarafından bir şey ekleyeyim: biz şu an kullanıcıya ödeme butonu tıklanır tıklanmaz "ödeme alındı" ekranı gösteriyoruz. Ama arka planda ödeme hâlâ işlenmemiş olabiliyor. Yani kullanıcı başarı ekranını görüyor ama aslında işlem tamamlanmamış.</p>
+              <p>Bunu düzeltmem lazım ama bu ayrı bir iş. Bu sprint'e sığmaz, benim ekibin önünde zaten 3 acil iş var.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-elif">EA</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Elif</span>
+              <span class="role">Product Owner</span>
+              <span class="time">10:04</span>
+            </div>
+            <div class="msg-body">
+              <p>Tamam, yöneticiye özet geçebilmem için durumu toparlayayım:</p>
+              <p>1) Backend'de ana sorun Mert'te — araştırma sonrası süre verecek.<br>
+              2) Altyapı ve banka anlaşması Burak'ta — bugün hukuka yazacağım.<br>
+              3) Frontend düzeltmesi Canan'da — sonraki sprint'e kalıyor.</p>
+              <p>Sorun şu: tek bir hata için 3 ayrı ekip iş çıkarıyor. <b>Hepsini tek bir büyük göreve bağlayıp</b> her sprint'te bir parçasını mı alalım, yoksa tek sprint'e sıkıştıralım mı? Ben birincisini tercih ederim, ekibin temposu bozulmasın.</p>
+            </div>
+            <div class="reactions"><span class="rx">👍 <b>3</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-mert">MK</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Mert</span>
+              <span class="role">Backend Chapter Lead</span>
+              <span class="time">10:07</span>
+            </div>
+            <div class="msg-body">
+              <p>Birincisi +1. Her şeyi bir sprint'e sıkıştırmak ekibi yakar. Ama bir şartım var: "iş bitti" demek için net bir ölçüt koyalım. Yoksa parça parça birleştirip "tamam" deriz, ama gerçekte çalışıp çalışmadığından emin olamayız.</p>
+              <p>Bir de <span class="mention">@elif</span> retro toplantısında şunu konuşalım: bu hata aslında 6 ay önce çıkmış, o zaman incelemedik. Aynı hataya düşmemek için süreç kurmamız lazım.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-elif">EA</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Elif</span>
+              <span class="role">Product Owner</span>
+              <span class="time">10:14</span>
+            </div>
+            <div class="msg-body">
+              <p>Mükemmel. Ben şimdi büyük görevi Jira'da açıyorum, her ekibe alt görevleri düşeceğim. Retro maddesini de not aldım <span class="mention">@mert</span>, çok haklısın.</p>
+              <p>Teşekkürler herkese. 🚀</p>
+            </div>
+            <div class="reactions"><span class="rx">🚀 <b>5</b></span><span class="rx">🙌 <b>3</b></span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========== TAB 2 =========== -->
+      <section class="view" data-view="2">
+        <div class="day-divider"><span>Perşembe, öğleden sonra</span></div>
+
+        <div class="msg">
+          <div class="avatar a-deniz">DY</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Deniz</span>
+              <span class="role">Backend Dev</span>
+              <span class="time">14:02</span>
+            </div>
+            <div class="msg-body">
+              <p>Test ortamına yeni kodu yükledim ama <b>testler kırmızı</b>. Garip olan şu: tek başına çalıştırdığım küçük testler geçiyor, ama hep birlikte çalıştırınca hata veriyor. Biri benimle oturup bakabilir mi? 🙋</p>
+              <p>Hata mesajı: <code>duplicate key</code> — yani aynı kaydı iki kez eklemeye çalışıyor diyor.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-kaya">KT</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Kaya</span>
+              <span class="role">Senior Backend Dev</span>
+              <span class="time">14:06</span>
+            </div>
+            <div class="msg-body">
+              <p>Tahmin edeyim: her test bittikten sonra veritabanı temizlenmesi gerek, ama biri temizlenmiyor, bir sonraki teste kirli veri kalıyor. O yüzden aynı kayıt iki kez ekleniyor.</p>
+              <p>Şuna bak: <b>ödeme kaydı ile doğrulama kaydı aynı anda mı siliniyor?</b> Muhtemelen biri ayrı bir işlem olarak commit oluyor, o yüzden geri alınmıyor.</p>
+            </div>
+            <div class="reactions"><span class="rx">🎯 <b>3</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-deniz">DY</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Deniz</span>
+              <span class="role">Backend Dev</span>
+              <span class="time">14:09</span>
+            </div>
+            <div class="msg-body">
+              <p>😱 Aynen öyle. Sen dâhisin.</p>
+              <p>Peki şimdi ne yapayım? Bu iki işlemi birleştirsem, ödeme başarısız olunca doğrulama kaydı da silinir. O zaman aynı istek tekrar geldiğinde bir daha işlenir — ki tam da bunu önlemeye çalışıyoruz. 🤔</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-kaya">KT</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Kaya</span>
+              <span class="role">Senior Backend Dev</span>
+              <span class="time">14:13</span>
+            </div>
+            <div class="msg-body">
+              <p>Haklısın, ayrı tutman doğru. Sorun kodda değil, <b>testin kendisinde</b>.</p>
+              <p>Her testten önce ilgili tabloyu temizleyen bir komut ekle. Ya da daha temizi — her test kendi mini veritabanında çalışsın. Biraz yavaşlatır ama "bazen geçiyor bazen geçmiyor" dedikleri o sinir bozucu flaky testlerden kurtulursun.</p>
+            </div>
+            <div class="reactions"><span class="rx">✨ <b>2</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-nazli">NÇ</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Nazlı</span>
+              <span class="role">QA Engineer</span>
+              <span class="time">14:18</span>
+            </div>
+            <div class="msg-body">
+              <p>İkinize de katılıyorum ama <b>QA'dan küçük bir itiraz</b>: siz sadece işlerin iyi gittiği senaryoyu test ediyorsunuz. Benim eklemem gereken senaryolar var:</p>
+              <p>→ aynı istek iki farklı müşteriden gelirse?<br>
+              → aynı müşteri farklı tutarla aynı anahtarı kullanırsa?<br>
+              → aynı istek tam aynı şekilde tekrar gelirse ne dönüyoruz?<br>
+              → iki istek tam aynı anda gelirse hangisi kazanıyor?</p>
+              <p>Özellikle sonuncusu kritik. "Yarış durumu" oluşuyor ve hangisinin kazanacağı belli olmuyor. Bunu 100 kez arka arkaya çalıştırarak test edeceğim. 🧪</p>
+            </div>
+            <div class="reactions"><span class="rx">🧪 <b>4</b></span><span class="rx">🫡 <b>2</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-leyla">LS</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Leyla</span>
+              <span class="role">Product Designer</span>
+              <span class="time">14:24</span>
+            </div>
+            <div class="msg-body">
+              <p>Teknik kısma girmeyeceğim ama bir şey sorayım: son senaryoda "biri kabul, biri reddediliyor" olduğunda kullanıcı ne görüyor? Eğer reddedilen tarafta "ödeme başarısız, tekrar deneyin" yazıyorsa, kullanıcı iki kez tıklamış gibi hissedip paniklerler.</p>
+              <p>Ben ayrı bir <b>yumuşak uyarı</b> mesajı tasarlayayım: "Ödemeniz zaten işleniyor, lütfen sayfayı yenilemeyin" gibi. Metin için <span class="mention">@canan</span> ile konuşurum.</p>
+            </div>
+            <div class="reactions"><span class="rx">💡 <b>3</b></span><span class="rx">❤️ <b>1</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-deniz">DY</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Deniz</span>
+              <span class="role">Backend Dev</span>
+              <span class="time">14:29</span>
+            </div>
+            <div class="msg-body">
+              <p>Testleri düzelttim, hepsi yeşil 🟢 . Nazlı'nın senaryolarını da yarın ekleyeceğim.</p>
+              <p>Kodu inceleme için gönderiyorum: <span class="mention">@kaya</span> <span class="mention">@nazli</span> bakar mısınız? 🙏 Sabahki toplantıda konuşuruz.</p>
+            </div>
+            <div class="reactions"><span class="rx">✅ <b>4</b></span><span class="rx">🟢 <b>3</b></span><span class="rx">🍻 <b>2</b></span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========== TAB 3 =========== -->
+      <section class="view" data-view="3">
+        <div class="day-divider"><span>Cuma, sabahın körü 🚨</span></div>
+
+        <div class="msg">
+          <div class="avatar a-asli">AY</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Aslı</span>
+              <span class="role">ML Engineer</span>
+              <span class="time">05:22</span>
+            </div>
+            <div class="msg-body">
+              <p>🚨 Nöbetteyim. <b>Dolandırıcılık tespit modelimiz</b> son 2 saatte çıldırdı. Eskiden 100 kişiden 94'ünü doğru yakalıyordu, şimdi 71. Müşteri hizmetlerine 140'tan fazla "kartım bloke oldu" şikayeti gelmiş. Alarm beni uyandırdı.</p>
+              <p>İlk şüphem: <b>model eski veriye göre karar veriyor</b>. Ama daha derine inmeden, modele gelen verilerin eğitim sırasındaki veriyle aynı olup olmadığını kontrol etmem lazım. Dağılım kaymış olabilir.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-tolga">TB</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Tolga</span>
+              <span class="role">Data Engineer</span>
+              <span class="time">05:28</span>
+            </div>
+            <div class="msg-body">
+              <p>Aynen şüphen doğru. Baktım: iki ayrı veri deposu var — biri ağır hesaplamalar için (yavaş ama doğru), diğeri canlı sistem için (hızlı ama kopyalanarak güncelleniyor). <b>Canlı sistemdeki veri 15 saat eski</b>. Normalde 2 saatten fazla eskimez.</p>
+              <p>Gece 23:00'te veri güncelleme işi başarısız olmuş, otomatik yeniden deneme de tükenmiş. Ama bize uyarı gitmemiş — <b>alarm sistemi bile sessiz kalmış</b>. Bunu retro'da konuşmamız lazım.</p>
+            </div>
+            <div class="reactions"><span class="rx">🤦 <b>3</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-asli">AY</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Aslı</span>
+              <span class="role">ML Engineer</span>
+              <span class="time">05:33</span>
+            </div>
+            <div class="msg-body">
+              <p>Yani sorun modelde değil, veride. İyi haber — modeli baştan eğitmeme gerek yok. Acil önlem planı:</p>
+              <p>→ Veri güncellemesini manuel başlatayım, 12 dk.<br>
+              → Bu arada modeli <b>eski sürüme geri alayım</b>. Eski sürüm bu bozuk veriye daha az duyarlıydı.<br>
+              → Önce sadece trafiğin %10'unu eski sürüme yönlendireyim, sorun yoksa tamamen çevireceğim.</p>
+              <p>Bu güvenli bir şekilde yavaş yavaş değişiklik yapma yöntemi. 30 dakikada geri dönüş planlıyorum.</p>
+            </div>
+            <div class="reactions"><span class="rx">🎯 <b>3</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-burak">BÖ</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Burak</span>
+              <span class="role">SRE / Platform Lead</span>
+              <span class="time">05:38</span>
+            </div>
+            <div class="msg-body">
+              <p>Trafik yönlendirmesini ayarlıyorum, 5 dk'ya hazır. Ama bir not: iki ayrı yerde trafik ayarı var, sadece birini güncellersen bölünme çalışmaz. İkisini de yaptığından emin ol.</p>
+              <p>Olayı <b>2. seviye</b> olarak açıyorum — model kapanmadı, sadece yanlış kararlar veriyor. Ama müşteri etkisi yüksek olduğu için yönetime bilgi verelim. <span class="mention">@elif</span> müşteri hizmetlerine açıklama metni hazırlar mısın?</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-tolga">TB</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Tolga</span>
+              <span class="role">Data Engineer</span>
+              <span class="time">05:44</span>
+            </div>
+            <div class="msg-body">
+              <p>Veri güncellemesi başladı. Bir daha böyle sessiz başarısızlık yaşamayalım diye iş başarısız olduğunda otomatik alarm gönderecek bir uyarı ekliyorum. Ayrıca 32 farklı veri kaynağı için de veri kalitesi kontrolü kuracağım.</p>
+              <p>Retro için notum: biz bu sprint'te "izleme altyapısını güçlendirme" işini <b>önemli ama kritik değil</b> olarak işaretlemiştik. Bu olay gösteriyor ki yanlışmış. Öncelik belirleme şeklimizi gözden geçirelim.</p>
+            </div>
+            <div class="reactions"><span class="rx">💯 <b>3</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-asli">AY</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Aslı</span>
+              <span class="role">ML Engineer</span>
+              <span class="time">06:17</span>
+            </div>
+            <div class="msg-body">
+              <p>Geri dönüş tamamlandı. Doğruluk oranı %94'e geri döndü. 4 dakikada normale indi. Olay kapanmadan önce yapmam gerekenler:</p>
+              <p>→ <b>Olay sonrası rapor</b> açacağım — "5 neden?" sorgulamasıyla.<br>
+              → 3 aksiyon maddesi: veri güncelleme alarmı, izleme paneli, geri alma adım listesi.<br>
+              → Retro'ya "kimseyi suçlamayan olay analizi" olarak taşıyacağım.</p>
+              <p>Şu an kahve ve 20 dakika uyku hakkı. 🫠</p>
+            </div>
+            <div class="reactions"><span class="rx">☕ <b>5</b></span><span class="rx">🏆 <b>4</b></span><span class="rx">🫶 <b>3</b></span></div>
+          </div>
+        </div>
+
+        <div class="day-divider"><span>olay çözüldü · 55 dk</span></div>
+      </section>
+
+      <!-- =========== TAB 4 =========== -->
+      <section class="view" data-view="4">
+        <div class="day-divider"><span>Çarşamba, sabah</span></div>
+
+        <div class="msg">
+          <div class="avatar a-mert">MK</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Mert</span>
+              <span class="role">Backend Chapter Lead</span>
+              <span class="time">11:18</span>
+            </div>
+            <div class="msg-body">
+              <p>Mimari öneriyi okudum. Platform ekibinin fikri: büyük ve karmaşık sipariş servisini <b>3 küçük parçaya bölmek</b>.</p>
+              <p>Prensipte doğru, ama <b>şu an mı yapmalıyız?</b> Son 3 sprint'te ekibin hızı düşüyor. PO buna bakıp "demek ki siz mimari değiştirmekle uğraşıyorsunuz" diyecek. Oysa gerçek sebep başka: 14 kişilik ekipten 4'ü yeni, onlara hâlâ sistemi öğretiyoruz. Servisi bölmek bu yükü üçe katlar — yeni gelenler üç ayrı servisi birden öğrenmek zorunda kalır.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-burak">BÖ</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Burak</span>
+              <span class="role">Platform Chapter Lead</span>
+              <span class="time">11:24</span>
+            </div>
+            <div class="msg-body">
+              <p>Adil bir eleştiri. Ama ben neden-sonucu tersinden görüyorum: <b>hız düşüyor çünkü sipariş servisi artık tek kişinin kafasına sığmıyor.</b> Tek dosyada 2.400 satır iş kuralı var. Bir yeri değiştirince 18 farklı test kırılıyor.</p>
+              <p>Bu bir "yeni insan sorunu" değil, <b>sistem artık tek bir takıma sığmıyor</b> sorunu.</p>
+            </div>
+            <div class="reactions"><span class="rx">🧠 <b>2</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-mert">MK</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Mert</span>
+              <span class="role">Backend Chapter Lead</span>
+              <span class="time">11:29</span>
+            </div>
+            <div class="msg-body">
+              <p>Bu argümana karşı çıkamam, haklısın. Ama şöyle öneriyorum: <b>ikiye bölelim</b>.</p>
+              <p>→ <b>1. Adım:</b> Kod içinde temiz sınırlar çiz, ama hâlâ tek bir uygulama olarak kalsın. Hem temiz hem risksiz.<br>
+              → <b>2. Adım:</b> 6 ay sonra, ekip stabil olunca, gerçekten ayrı servisler yap.</p>
+              <p>Bu şekilde hız 2 sprint içinde geri gelir ve ikinci adıma hazırlıklı gireriz. Tek seferde baştan yazmak yerine yavaş yavaş ayrıştırma — bu çok daha güvenli bir yol.</p>
+            </div>
+            <div class="reactions"><span class="rx">🌿 <b>3</b></span><span class="rx">🤝 <b>2</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-burak">BÖ</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Burak</span>
+              <span class="role">Platform Chapter Lead</span>
+              <span class="time">11:33</span>
+            </div>
+            <div class="msg-body">
+              <p>Kabul. Öneriyi iki adımlı hale getireceğim. 1. adım için net bitiş kriterleri yazacağım: modüller arası iletişim nasıl olacak, her modülün kendi kuralı olacak vs.</p>
+              <p>Hafta sonu paylaşırım <span class="mention">@mert</span> <span class="mention">@canan</span>. <b>Kararı da yazılı bir mimari karar kaydı</b> olarak arşivleyeceğim ki 6 ay sonra "niye böyle yaptık" sorusuna cevabımız olsun.</p>
+            </div>
+            <div class="reactions"><span class="rx">📐 <b>2</b></span><span class="rx">📘 <b>2</b></span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========== TAB 5 =========== -->
+      <section class="view" data-view="5">
+        <div class="day-divider"><span>Bu sabah · 09:30 daily</span></div>
+
+        <div class="msg">
+          <div class="avatar a-deniz">DY</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Deniz</span>
+              <span class="role">Backend Dev</span>
+              <span class="time">09:31</span>
+            </div>
+            <div class="msg-body">
+              <p>Günaydın. Dün ödeme hatası üzerinde çalıştım, testleri yeşile çevirdim. Bugün Nazlı'nın uç durum senaryolarını ekleyeceğim. <b>Engelim yok</b> — ama kod incelemesi için Kaya'dan onay bekliyorum.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-kaya">KT</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Kaya</span>
+              <span class="role">Senior Backend Dev</span>
+              <span class="time">09:33</span>
+            </div>
+            <div class="msg-body">
+              <p>Bugün bakacağım Deniz, öğleden sonra açık saatim var. Dün ben mimari öneriyi inceledim. Bugün yeni eklenecek servisler için bir taslak çıkaracağım. Engelim yok.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-nazli">NÇ</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Nazlı</span>
+              <span class="role">QA Engineer</span>
+              <span class="time">09:35</span>
+            </div>
+            <div class="msg-body">
+              <p>Dün 5 uç durum senaryosunu test paketine ekledim. Bugün otomatik çalışan test zincirine bağlayacağım ki her kod değişikliğinde otomatik çalışsın.</p>
+              <p>Küçük bir <b>engel</b>: test ortamına erişimim yavaş, 30 dakikadan fazla bekliyorum. <span class="mention">@burak</span> bakabilir misin? 🙏</p>
+            </div>
+            <div class="reactions"><span class="rx">👀 <b>1</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-burak">BÖ</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Burak</span>
+              <span class="role">SRE / Platform Lead</span>
+              <span class="time">09:37</span>
+            </div>
+            <div class="msg-body">
+              <p>Bakayım Nazlı, muhtemelen test ortamının kaynakları yetersiz. Dün ML olayı yüzünden yarım kalan izleme işim var, onu toparlayıp ardından bakacağım. Toplantı sonrası sana yazarım.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-leyla">LS</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Leyla</span>
+              <span class="role">Product Designer</span>
+              <span class="time">09:39</span>
+            </div>
+            <div class="msg-body">
+              <p>Dün ödeme ekranı için yumuşak uyarı metinlerini taslakladım. Bugün Canan ile 30 dk oturup tasarımları final haline getireceğiz. Engelim yok — ama <span class="mention">@elif</span> metin için hukuk ekibinden onay almamız gerek mi?</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-elif">EA</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Elif</span>
+              <span class="role">Product Owner</span>
+              <span class="time">09:41</span>
+            </div>
+            <div class="msg-body">
+              <p>Evet Leyla, ödeme mesajları için hukuk onayı şart. Bugün sabah onlara düşeyim. Toplantı dışı bir konu: cuma demo'da hangi geliştirmeleri müşteriye göstereceğimizi konuşalım. Öğleden sonra 15 dk'lık bir <b>bilgi paylaşımı seansı</b> koyalım mı?</p>
+            </div>
+            <div class="reactions"><span class="rx">👍 <b>3</b></span></div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar a-mert">MK</div>
+          <div>
+            <div class="msg-head">
+              <span class="name">Mert</span>
+              <span class="role">Backend Chapter Lead</span>
+              <span class="time">09:43</span>
+            </div>
+            <div class="msg-body">
+              <p>Bana uyar. Şunu da ekleyeyim: <b>demo'ya görünür bir şey koyamayız</b> çünkü üzerinde çalıştığımız güvenlik geliştirmesi arka planda. Ama müşteriye güven anlamında bunu <b>bir hikâyeyle</b> anlatabiliriz.</p>
+              <p>Bugünkü engel: hâlâ araştırma aşamasındayım, net bir süre veremem. Cuma öncesi vereceğim <span class="mention">@elif</span>.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========== TAB 6 · SOLUTION =========== -->
+      <section class="view" data-view="6">
+        <div class="solution-wrap">
+
+          <div class="solution-intro">
+            <h2>🔑 Ne Demek İstediler?</h2>
+            <p>Sohbetlerde geçen teknik terimler ve her sohbetin özü burada. Önce sol tarafta terimin yazılı hali, sağda <b>insanca karşılığı</b>. Aşağıda her sohbetin bir cümlelik özeti.</p>
+          </div>
+
+          <!-- SOHBET 1 TERIMLER -->
+          <div class="solution-card">
+            <div class="tag">sohbet 01 · pod-checkout-sync</div>
+            <h3>Terimler</h3>
+            <div class="decode">
+              <div class="decode-row">
+                <div class="jargon">sprint</div>
+                <div class="plain">Genelde 2 haftalık kısa çalışma dönemi. Ekip bu sürede belli işleri bitirmeye söz verir.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">idempotency</div>
+                <div class="plain">Aynı işlemin birden çok kez yapılsa bile sadece bir kez etki yaratması. "Ödeme butonuna 3 kere bassan bile 1 kez ücretlendiril" demek.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">chapter lead</div>
+                <div class="plain">Belli bir uzmanlık alanının (frontend, backend, altyapı) lideri. Ekip içi kılavuz gibi.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">epic</div>
+                <div class="plain">Birden çok küçük işi kapsayan büyük görev başlığı. "Çatı iş."</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">velocity</div>
+                <div class="plain">Ekibin bir sprintte ortalama ne kadar iş bitirdiği. Takımın hızı.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">war room</div>
+                <div class="plain">Herkesin bir soruna odaklanmak için bir araya geldiği kriz odası. Genelde yorucudur.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">retro (retrospective)</div>
+                <div class="plain">Sprint sonu toplantısı. "Neler iyi gitti, neyi bir daha yapmayalım?" sorularına cevap arar.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">DoD (definition of done)</div>
+                <div class="plain">"Bu iş ne zaman gerçekten bitmiş sayılır?" için önceden anlaşılmış kriterler.</div>
+              </div>
+            </div>
+            <div class="summary">
+              <b>ÖZET:</b> Müşterilerden ikili ödeme şikayeti geldi. 3 ekip lideri "sorun bizim tarafımızda da var" diyor. PO hepsini tek bir büyük göreve bağlayıp parça parça ilerlemeye karar veriyor.
+            </div>
+          </div>
+
+          <!-- SOHBET 2 TERIMLER -->
+          <div class="solution-card">
+            <div class="tag">sohbet 02 · payments-squad</div>
+            <h3>Terimler</h3>
+            <div class="decode">
+              <div class="decode-row">
+                <div class="jargon">test (unit/integration)</div>
+                <div class="plain">Kodun doğru çalışıp çalışmadığını otomatik kontrol eden küçük programlar.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">commit</div>
+                <div class="plain">Bir değişikliği "tamam, kaydedildi" demek. Veritabanında kaydı kesinleştirmek.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">rollback</div>
+                <div class="plain">Bir işlemi yarıda kesip başlangıç haline döndürmek. Geri alma.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">flaky test</div>
+                <div class="plain">"Bazen geçiyor bazen geçmiyor" diyen tutarsız test. En sinir bozucu şeylerden biri.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">edge case</div>
+                <div class="plain">Normal akışın dışında kalan uç durumlar. "Ya şöyle olursa?" senaryoları.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">race condition</div>
+                <div class="plain">İki işlemin aynı anda olup birbirine karışması. Yarış durumu.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">happy path</div>
+                <div class="plain">Her şeyin yolunda gittiği "mutlu senaryo." Testlerin başladığı yer.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">code review</div>
+                <div class="plain">Birinin yazdığı kodu başka birinin okuyup önerilerde bulunması. 4 göz bir gözden iyidir.</div>
+              </div>
+            </div>
+            <div class="summary">
+              <b>ÖZET:</b> Deniz bir hatada takılmış, Kaya 5 dk'da tanı koyuyor. Nazlı "hayır, dur, uç durumları da test edelim" diyor. Leyla "kullanıcı ne görüyor?" diye soruyor. Herkes eşit konuşuyor, kimse patronluk taslamıyor.
+            </div>
+          </div>
+
+          <!-- SOHBET 3 TERIMLER -->
+          <div class="solution-card">
+            <div class="tag">sohbet 03 · ml-platform-squad</div>
+            <h3>Terimler</h3>
+            <div class="decode">
+              <div class="decode-row">
+                <div class="jargon">model</div>
+                <div class="plain">Verilerden öğrenerek karar veren program. Burada: hangi ödeme dolandırıcılık mı karar veriyor.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">precision</div>
+                <div class="plain">"Dolandırıcılık dedim, gerçekten öyleydi" oranı. %94'ten %71'e düşmek: her 100 alarmın 30'u yanlış olmuş.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">data drift / skew</div>
+                <div class="plain">Modele gelen verilerin zamanla değişmesi. Model eski verilerle eğitilmiş, yeni verileri tanımıyor.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">on-call (nöbet)</div>
+                <div class="plain">Bir sistem çökerse aranacak kişi. Sırayla olur ve genelde gecenin bir yarısında çalar.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">canary / shadow mode</div>
+                <div class="plain">Yeni bir şeyi önce trafiğin küçük bir bölümüne açıp gözlemlemek. Kömür ocağındaki kanarya mantığı.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">rollback (ML)</div>
+                <div class="plain">Modelin eski sürümüne geri dönmek. "Yeni versiyon bozuk, eskiye dönelim."</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">postmortem</div>
+                <div class="plain">Olay sonrası rapor. "Ne oldu, neden oldu, bir daha olmasın nasıl önleriz?"</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">blameless</div>
+                <div class="plain">Kimseyi suçlamadan olayı analiz etme kültürü. "Kim yaptı" yerine "süreç niye izin verdi?"</div>
+              </div>
+            </div>
+            <div class="summary">
+              <b>ÖZET:</b> Gece yarısı alarm. Sorun modelin kendisinde değil, modele giden veride. Aslı önce kısa vadeli çözüm yapıyor (eski sürüme dön), Tolga uzun vadeli iyileştirme planı kuruyor (alarm ekle, kalite kontrolü kur). Kimseyi suçlamıyorlar.
+            </div>
+          </div>
+
+          <!-- SOHBET 4 TERIMLER -->
+          <div class="solution-card">
+            <div class="tag">sohbet 04 · arch-rfc-review</div>
+            <h3>Terimler</h3>
+            <div class="decode">
+              <div class="decode-row">
+                <div class="jargon">RFC (request for comments)</div>
+                <div class="plain">"Şöyle bir değişiklik yapmayı düşünüyorum, ne düşünürsünüz?" dokümanı. Yorum almak için.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">monolit</div>
+                <div class="plain">Her şeyin tek bir uygulamada olduğu yapı. Küçükken hızlı, büyüyünce yavaşlar.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">servis ayrıştırma</div>
+                <div class="plain">Tek büyük uygulamayı küçük bağımsız parçalara bölmek. Her parça kendi işini yapar.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">teknik borç</div>
+                <div class="plain">"Şimdilik hızlı çözüm, sonra düzeltiriz" dediğin ama düzeltmediğin şeyler. Faizi ağır.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">onboarding</div>
+                <div class="plain">Yeni işe gelen birinin ekibe ve sisteme alışma süreci. Eski ekip için de iş yükü yaratır.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">kademeli ayrıştırma</div>
+                <div class="plain">Tek seferde baştan yazmak yerine yavaş yavaş bölme. "Apartmanı yıkmadan dairelere ayırma."</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">mimari karar kaydı</div>
+                <div class="plain">"Bu kararı niye verdik?" sorusunun yazılı cevabı. 6 ay sonra faydası çok büyük.</div>
+              </div>
+            </div>
+            <div class="summary">
+              <b>ÖZET:</b> İki lider aynı durumu farklı okuyor. Mert "insan sorunu" diyor, Burak "sistem sorunu" diyor. Tartışmıyorlar, karşılıklı ikna ediyorlar ve <b>ortak bir orta yol</b> buluyorlar: önce kod içinde temiz sınırlar çiz, 6 ay sonra gerçek ayrıştırmayı yap.
+            </div>
+          </div>
+
+          <!-- SOHBET 5 TERIMLER -->
+          <div class="solution-card">
+            <div class="tag">sohbet 05 · daily-standup</div>
+            <h3>Terimler</h3>
+            <div class="decode">
+              <div class="decode-row">
+                <div class="jargon">daily / standup</div>
+                <div class="plain">Her sabah 10-15 dk'lık kısa ekip toplantısı. Üç soru: dün ne yaptım, bugün ne yapacağım, engelim var mı?</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">engel (blocker)</div>
+                <div class="plain">"Ben işimi yapmak istiyorum ama şu yüzden yapamıyorum" diyeceğin şey. Ekibin görevi engeli kaldırmak.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">demo</div>
+                <div class="plain">Sprint sonunda yapılanları müşteriye veya paydaşa gösterme toplantısı.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">bilgi paylaşımı seansı</div>
+                <div class="plain">Ekip üyelerinin birbirine bildikleri bir şeyi aktardığı kısa sunum. "Bana 15 dakika verirsen bildiklerimi anlatırım."</div>
+              </div>
+            </div>
+            <div class="summary">
+              <b>ÖZET:</b> Herkes sırayla aynı kalıbı kullanıyor (dün/bugün/engel). Kimse detaya girmiyor — ayrıntılar toplantı sonrası birebir konuşulacak. Nazlı'nın engeli anında sahipleniyor. Sadece 10 dakika sürüyor.
+            </div>
+          </div>
+
+          <!-- SOHBETLERİN ÖZETİ -->
+          <div class="solution-card" style="border-left:3px solid var(--green)">
+            <div class="tag" style="color:var(--green)">bütün sohbetlerin ortak dersi</div>
+            <h3>Dikkat ettiysen...</h3>
+            <div class="decode">
+              <div class="decode-row">
+                <div class="jargon">1. Soru sormak güçsüzlük değil</div>
+                <div class="plain">Deniz "biri pair yapabilir mi?" dedi. Kimse "yaa sen bilmiyor musun" demedi. Birlikte çözdüler.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">2. Problemi isimlendirmek çözüm kadar önemli</div>
+                <div class="plain">"idempotency", "race condition", "data drift" — bu terimler ekibin aynı şeyi kastettiğinden emin olmasını sağlar.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">3. Farklı roller, farklı bakış açıları</div>
+                <div class="plain">Aynı hataya PO/Dev/QA/Tasarımcı farklı yerlerden bakıyor. Hepsi haklı, hiçbiri tek başına yeterli.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">4. "Acil" her zaman "önemli" demek değil</div>
+                <div class="plain">Mert "acele etmeyelim, kökü bulalım" dedi ve haklı çıktı. İyi ekipler panik yapmaz.</div>
+              </div>
+              <div class="decode-row">
+                <div class="jargon">5. Küçük not: "retro'da konuşalım"</div>
+                <div class="plain">Herkesin bu cümleyi kullandığını gördün mü? Çünkü anlık tartışmak yerine doğru zamanda konuşmak ekibi rahatlatır.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- ============ KANBAN CARD MODAL ============ -->
+<div class="modal-backdrop" id="card-modal">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div class="modal-head-left">
+        <span class="mid" id="m-id">PAY-0000</span>
+        <span class="status-pill" id="m-status">BACKLOG</span>
+        <span class="tagchip" id="m-type" style="font-family:'JetBrains Mono',monospace">FEAT</span>
+      </div>
+      <button class="modal-close" id="m-close" title="Kapat">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-main">
+        <div class="mtitle" id="m-title">Başlık yükleniyor...</div>
+
+        <div class="story-block">
+          <span class="story-label">User Story</span>
+          <span id="m-story">—</span>
+        </div>
+
+        <div class="modal-section">
+          <h4>Açıklama</h4>
+          <p id="m-desc">—</p>
+        </div>
+
+        <div class="modal-section">
+          <h4>Kabul Kriterleri</h4>
+          <ul id="m-ac"></ul>
+        </div>
+
+        <div class="modal-section">
+          <h4>Hareket Geçmişi</h4>
+          <div id="m-activity"></div>
+        </div>
+      </div>
+
+      <div class="modal-side">
+        <div class="side-block">
+          <div class="side-label">Atanan</div>
+          <div class="side-assignee" id="m-assignee">—</div>
+        </div>
+        <div class="side-block">
+          <div class="side-label">Sprint</div>
+          <div class="side-value">Sprint 34</div>
+        </div>
+        <div class="side-block">
+          <div class="side-label">Story Points</div>
+          <div class="side-value" id="m-points">—</div>
+        </div>
+        <div class="side-block">
+          <div class="side-label">Öncelik</div>
+          <div class="side-value" id="m-priority">—</div>
+        </div>
+        <div class="side-block">
+          <div class="side-label">Etiketler</div>
+          <div class="side-value" id="m-labels" style="display:flex;gap:4px;flex-wrap:wrap"></div>
+        </div>
+        <div class="side-block">
+          <div class="side-label">İlişkili Sohbet</div>
+          <div class="side-value" id="m-link" style="font-size:12.5px;color:var(--blue)">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.channel');
+  const views = document.querySelectorAll('.view');
+  const headHash = document.getElementById('head-hash');
+  const headTitle = document.getElementById('head-title');
+  const headSub = document.getElementById('head-sub');
+  const headMeta = document.getElementById('head-meta');
+  const mainBody = document.getElementById('main-body');
+
+  const titles = {
+    'c1': { hash:'🏢', title:'şirket', sub:'Nexora Payments · ne yaparız, nasıl çalışırız' },
+    'c2': { hash:'🧬', title:'tribe yapısı', sub:'Ödeme Omurgası Tribe · 4 squad · 32 üye' },
+    'c3': { hash:'📋', title:'kanban board', sub:'Checkout Squad · Sprint 34 · 5. gün' },
+    '1': { hash:'#', title:'pod-checkout-sync', sub:'3 chapter lead + PO · Checkout servisi sohbeti' },
+    '2': { hash:'#', title:'payments-squad', sub:'7 üye · Canlı hata ayıklama' },
+    '3': { hash:'#', title:'ml-platform-squad', sub:'Olay müdahalesi · P2 · aktif' },
+    '4': { hash:'#', title:'arch-rfc-review', sub:'Mimari öneri · 2 lider tartışıyor' },
+    '5': { hash:'#', title:'daily-standup', sub:'Günlük ekip toplantısı · sabah 09:30' },
+    '6': { hash:'🔑', title:'ne demek istediler?', sub:'Sohbetlerde geçen terimlerin çözümü' },
+  };
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const id = tab.dataset.tab;
+
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      views.forEach(v => v.classList.remove('active'));
+      document.querySelector(`[data-view="${id}"]`).classList.add('active');
+
+      const meta = titles[id];
+      headHash.textContent = meta.hash;
+      headTitle.textContent = meta.title;
+      headSub.innerHTML = `<span>${meta.sub}</span>`;
+
+      if (id.startsWith('c')) {
+        const letter = id.replace('c','');
+        const letters = {'1':'A','2':'B','3':'C'};
+        headMeta.textContent = `${letters[letter]} / 3 tanı`;
+      } else {
+        headMeta.textContent = `${id.padStart(2,'0')} / 06 sohbet`;
+      }
+
+      mainBody.scrollTop = 0;
+    });
+  });
+
+  // ============ KANBAN CARD DETAIL MODAL ============
+  const cardData = {
+    'PAY-2089': {
+      title: 'Kullanıcı olarak, bir ödeme yapmayı denediğimde sadece bir kez ücretlendirilmek istiyorum',
+      story: '<b>Müşteri olarak</b>, ödeme ekranında butona bastığımda veya internetim kesilirse, <b>sistemin beni sadece bir kez ücretlendirmesini</b> istiyorum; <b>böylece</b> hesabımdan mükerrer para çekilme korkusu yaşamayayım.',
+      desc: 'Son 48 saatte 4 ticket açıldı: müşteriler aynı ödemeden iki kez tahsilat edildiğini söylüyor. Müşteri hizmetleri eskale etti. Backend tarafında idempotency anahtarı kontrolü tutarsız çalışıyor; retry durumlarında mükerrer intent oluşabiliyor.',
+      ac: [
+        ['Aynı idempotency key ile gelen istekler tek bir ödeme oluşturmalı', false],
+        ['İlk başarılı yanıt cache\'lenmeli ve sonraki isteklere döndürülmeli', false],
+        ['TTL 24 saatten 72 saate çıkarılmalı', true],
+        ['PSP webhook\'ları sırasıyla işlenmeli', false],
+        ['Unit + integration test yazılmalı, 1000 concurrent istekte 0 mükerrer intent', false]
+      ],
+      activity: [
+        {who:'Elif', ini:'EA', clr:'a-elif', txt:'Ticket\'ı <b>P1</b> olarak işaretledi ve Mert\'e atadı', time:'2 gün önce · 09:42'},
+        {who:'Mert', ini:'MK', clr:'a-mert', txt:'Spike sonrası <b>8 SP</b> tahmin ekledi', time:'2 gün önce · 10:08'},
+        {who:'Deniz', ini:'DY', clr:'a-deniz', txt:'İşi kendine aldı ve <code>PAY-2089</code> branch\'ini açtı', time:'2 gün önce · 14:30'},
+        {who:'Kaya', ini:'KT', clr:'a-kaya', txt:'Yorum ekledi: <i>"REQUIRES_NEW propagation kontrolü gerekli"</i>', time:'1 gün önce · 14:13'},
+        {who:'Deniz', ini:'DY', clr:'a-deniz', txt:'Durumu <b>Yapılıyor</b>\'a çekti', time:'1 gün önce · 16:45'}
+      ],
+      status:'progress', statusLabel:'YAPILIYOR', type:'BUG', typeColor:'t-bug',
+      assignee:{name:'Deniz Yıldız', ini:'DY', role:'Backend Dev', clr:'a-deniz'},
+      points:8, priority:'P1 · Acil',
+      labels:[{t:'BE',c:'t-be'},{t:'BUG',c:'t-bug'},{t:'P1',c:'t-p1'}],
+      link:'#pod-checkout-sync · #payments-squad'
+    },
+    'PAY-2090': {
+      title: 'Sistem olarak, banka onayı gecikirse bile mükerrer tahsilat yapmamalıyım',
+      story: '<b>Ödeme sistemi olarak</b>, banka tarafından gelen webhook\'lar tekrarlandığında, <b>akıllıca yeniden deneme yapmalı ve mükerrer işlemi engellemeli</b>; <b>böylece</b> mevcut altyapının sorunu tek başına çözebilmesini sağlayalım.',
+      desc: 'SRE gözlemine göre 3DS dönüşü olan webhook\'ların retry policy\'si yok. At-least-once semantiği var ama idempotency katmanı zayıf. Ayrıca PSP kontratı gözden geçirilmeli.',
+      ac: [
+        ['Exponential backoff ile retry politikası uygulanmalı', false],
+        ['Yeni metric eklenmeli: <code>payment.intent.deduplicated</code>', false],
+        ['SLO belirlenmeli: 99.95% de-duplication', false],
+        ['PSP kontrat revizyonu için legal\'e brief gönderilmeli', true]
+      ],
+      activity: [
+        {who:'Burak', ini:'BÖ', clr:'a-burak', txt:'Ticket\'ı açtı, <b>PAY-2089</b>\'un kardeş olarak bağladı', time:'2 gün önce · 10:11'},
+        {who:'Elif', ini:'EA', clr:'a-elif', txt:'Legal ekibine brief gönderdi', time:'2 gün önce · 15:00'},
+        {who:'Burak', ini:'BÖ', clr:'a-burak', txt:'Durumu <b>Yapılıyor</b>\'a çekti', time:'1 gün önce · 09:30'}
+      ],
+      status:'progress', statusLabel:'YAPILIYOR', type:'TECH', typeColor:'t-tech',
+      assignee:{name:'Burak Özkan', ini:'BÖ', role:'SRE / Platform Lead', clr:'a-burak'},
+      points:5, priority:'P1 · Acil',
+      labels:[{t:'SRE',c:'t-sre'},{t:'TECH',c:'t-tech'},{t:'P1',c:'t-p1'}],
+      link:'#pod-checkout-sync'
+    },
+    'PAY-2091': {
+      title: 'Kullanıcı olarak, ödeme başarısız olduğunda neden başarısız olduğunu öğrenmek istiyorum',
+      story: '<b>Müşteri olarak</b>, ödeme başarısız olduğunda, <b>nedenini anlaşılır bir dille görmek</b> istiyorum; <b>böylece</b> ne yapacağımı bilebileyim — tekrar denemek mi, farklı kart kullanmak mı, başka bir şey mi.',
+      desc: 'Şu an ödeme başarısız olduğunda sadece "Ödeme başarısız, tekrar deneyin" mesajı çıkıyor. Bu kullanıcıyı paniğe sevk ediyor. Hata kodlarını anlamlı mesajlara çevirmemiz gerekiyor. Ayrıca state yönetimini pessimistic update\'e çevirmek gerekiyor.',
+      ac: [
+        ['Hata kodlarını kullanıcı dostu mesajlara çeviren bir sözlük hazırlanmalı', false],
+        ['Ödeme durumu state\'i pessimistic olmalı (başarılı olana kadar "işleniyor")', false],
+        ['Leyla ile copy revize edilmeli', false],
+        ['Tüm hata senaryoları için test yazılmalı', false]
+      ],
+      activity: [
+        {who:'Elif', ini:'EA', clr:'a-elif', txt:'Ticket\'ı backlog\'a ekledi', time:'3 gün önce · 11:00'},
+        {who:'Canan', ini:'CD', clr:'a-canan', txt:'Yorum: <i>"Bu sprint\'e sığdırmakta zorlanıyorum"</i>', time:'2 gün önce · 09:58'},
+        {who:'Leyla', ini:'LS', clr:'a-leyla', txt:'Tasarımları inceledi, 3 varyant önerdi', time:'1 gün önce · 16:20'}
+      ],
+      status:'backlog', statusLabel:'YAPILACAK', type:'FEAT', typeColor:'t-feat',
+      assignee:{name:'Canan Demir', ini:'CD', role:'Frontend Chapter Lead', clr:'a-canan'},
+      points:5, priority:'P2 · Önemli',
+      labels:[{t:'FE',c:'t-fe'},{t:'FEAT',c:'t-feat'},{t:'P2',c:'t-p2'}],
+      link:'#pod-checkout-sync'
+    },
+    'PAY-2093': {
+      title: 'QA olarak, uç durum senaryolarımı otomatik test zincirine eklemek istiyorum',
+      story: '<b>QA olarak</b>, 5 kritik uç durum senaryosunu regression suite\'e ekleyip her kod değişikliğinde otomatik çalıştırmak istiyorum; <b>böylece</b> manuel test yükünü azaltıp kaliteyi sürekli güvence altına alabileyim.',
+      desc: 'Edge case matrix: (1) aynı key + farklı tenant, (2) aynı key + farklı amount, (3) aynı key + aynı payload, (4) expired key, (5) race condition. Özellikle 5. senaryo için @RepeatedTest(100) ile non-deterministic davranışı yakalamamız gerekiyor.',
+      ac: [
+        ['5 uç durum senaryosu kodlanmış olmalı', true],
+        ['CI pipeline\'ında otomatik çalışmalı', false],
+        ['Race condition testi 100 kez tekrarlanmalı', false],
+        ['Pact broker ile contract test doğrulanmalı', false]
+      ],
+      activity: [
+        {who:'Nazlı', ini:'NÇ', clr:'a-nazli', txt:'Uç durum matrisini hazırladı', time:'1 gün önce · 14:18'},
+        {who:'Deniz', ini:'DY', clr:'a-deniz', txt:'Yorum: <i>"Yarın sabah ekleyeceğim"</i>', time:'1 gün önce · 14:29'},
+        {who:'Nazlı', ini:'NÇ', clr:'a-nazli', txt:'Durumu <b>Yapılıyor</b>\'a çekti', time:'Bu sabah · 09:35'}
+      ],
+      status:'progress', statusLabel:'YAPILIYOR', type:'TECH', typeColor:'t-tech',
+      assignee:{name:'Nazlı Çelik', ini:'NÇ', role:'QA Engineer', clr:'a-nazli'},
+      points:3, priority:'P2 · Önemli',
+      labels:[{t:'QA',c:'t-qa'},{t:'TECH',c:'t-tech'},{t:'P2',c:'t-p2'}],
+      link:'#payments-squad · #daily-standup'
+    },
+    'PAY-2095': {
+      title: 'Kullanıcı olarak, ödeme işlenirken "işleniyor" uyarısı görüp panik olmamak istiyorum',
+      story: '<b>Müşteri olarak</b>, ödeme yaptığımda ve sistem arka planda işlemi tamamlarken, <b>"Ödemeniz işleniyor, lütfen sayfayı yenilemeyin" gibi güven verici bir mesaj görmek</b> istiyorum; <b>böylece</b> panik yapıp sayfayı yenilemeyeyim ve mükerrer tahsilat yaşanmasın.',
+      desc: 'Leyla\'nın önerisi: race condition durumunda reject edilen isteklere 409 Conflict dönüyoruz. FE bunu yakalayıp "processing" state\'ine düşmeli ve yumuşak bir uyarı göstermeli. Metin Canan ile birlikte hazırlanacak.',
+      ac: [
+        ['3 varyant metin tasarlanmalı (kısa, orta, detaylı)', true],
+        ['Ekran okuyucular için uygun olmalı', false],
+        ['Hukuk onayı alınmalı', false],
+        ['A/B test için ayrı flag\'lenmeli', false]
+      ],
+      activity: [
+        {who:'Leyla', ini:'LS', clr:'a-leyla', txt:'İhtiyacı <i>"graceful degradation"</i> olarak tariflendirdi', time:'1 gün önce · 14:24'},
+        {who:'Leyla', ini:'LS', clr:'a-leyla', txt:'3 varyant taslağı paylaştı', time:'Bu sabah · 08:15'},
+        {who:'Elif', ini:'EA', clr:'a-elif', txt:'Hukuk onayı için brief gönderdi', time:'Bu sabah · 09:42'}
+      ],
+      status:'progress', statusLabel:'YAPILIYOR', type:'FEAT', typeColor:'t-feat',
+      assignee:{name:'Leyla Sarı', ini:'LS', role:'Product Designer', clr:'a-leyla'},
+      points:3, priority:'P2 · Önemli',
+      labels:[{t:'UX',c:'t-ux'},{t:'FEAT',c:'t-feat'}],
+      link:'#payments-squad'
+    },
+    'PAY-2088': {
+      title: 'Geliştirici olarak, testlerim birbirine karışmadan çalışsın istiyorum',
+      story: '<b>Backend geliştirici olarak</b>, testlerimi çalıştırdığımda, <b>her testin kendi izole veritabanında çalışmasını</b> istiyorum; <b>böylece</b> "bazen geçiyor, bazen geçmiyor" diyen flaky testlerden kurtulayım.',
+      desc: 'Idempotency repository\'sinin REQUIRES_NEW propagation\'ı kullanması sebebiyle testler birbirine karışıyor. Çözüm: Testcontainers\'a geçiş — her test kendi Postgres container\'ında çalışır.',
+      ac: [
+        ['Testcontainers kütüphanesi eklenmiş olmalı', true],
+        ['Her test kendi izole ortamında çalışmalı', true],
+        ['CI süresi kabul edilebilir düzeyde olmalı (< %20 artış)', true],
+        ['Dokümantasyon güncellenmeli', false]
+      ],
+      activity: [
+        {who:'Deniz', ini:'DY', clr:'a-deniz', txt:'Ticket\'ı açtı', time:'2 gün önce · 14:02'},
+        {who:'Kaya', ini:'KT', clr:'a-kaya', txt:'Çözüm önerisi: <i>"Testcontainers"</i>', time:'2 gün önce · 14:13'},
+        {who:'Deniz', ini:'DY', clr:'a-deniz', txt:'Geçiş tamamlandı, testler yeşil 🟢', time:'2 gün önce · 14:29'},
+        {who:'Deniz', ini:'DY', clr:'a-deniz', txt:'Durumu <b>İnceleme</b>\'ye çekti, review için atadı', time:'1 gün önce · 10:00'}
+      ],
+      status:'review', statusLabel:'İNCELEME', type:'TECH', typeColor:'t-tech',
+      assignee:{name:'Deniz Yıldız', ini:'DY', role:'Backend Dev', clr:'a-deniz'},
+      points:5, priority:'P2 · Önemli',
+      labels:[{t:'BE',c:'t-be'},{t:'TECH',c:'t-tech'}],
+      link:'#payments-squad'
+    },
+    'PAY-2086': {
+      title: 'Nöbetçi olarak, gece yarısı veri akışı bozulursa telefonum çalsın istiyorum',
+      story: '<b>Nöbetçi ekip üyesi olarak</b>, veri işleme zinciri başarısız olduğunda, <b>PagerDuty üzerinden anında uyarı almak</b> istiyorum; <b>böylece</b> sessiz başarısızlık yüzünden ertesi sabah büyük bir felaketle uyanmayayım.',
+      desc: 'Son fraud modeli olayında materialization job\'u gece 23:00\'te sessizce başarısız olmuş, sabah olaya kadar kimse farkında değildi. DAG\'a on_failure_callback eklenmeli ve Great Expectations suite\'i entegre edilmeli.',
+      ac: [
+        ['Airflow DAG\'ında on_failure_callback tanımlanmalı', true],
+        ['PagerDuty entegrasyonu test edilmiş olmalı', true],
+        ['32 feature için data quality check kurulmalı', false],
+        ['Runbook yazılmalı', false]
+      ],
+      activity: [
+        {who:'Tolga', ini:'TB', clr:'a-tolga', txt:'Olay sırasında acil ticket açtı', time:'3 gün önce · 05:44'},
+        {who:'Aslı', ini:'AY', clr:'a-asli', txt:'Yorum: <i>"Postmortem action item\'ı olarak bağlıyorum"</i>', time:'3 gün önce · 06:20'},
+        {who:'Tolga', ini:'TB', clr:'a-tolga', txt:'PR açtı, review için atadı', time:'Dün · 17:30'}
+      ],
+      status:'review', statusLabel:'İNCELEME', type:'BUG', typeColor:'t-bug',
+      assignee:{name:'Tolga Bozkurt', ini:'TB', role:'Data Engineer', clr:'a-tolga'},
+      points:3, priority:'P1 · Acil',
+      labels:[{t:'SRE',c:'t-sre'},{t:'BUG',c:'t-bug'},{t:'P1',c:'t-p1'}],
+      link:'#ml-platform-squad'
+    },
+    'PAY-2087': {
+      title: 'ML Mühendisi olarak, model bozulduğunda eski sürüme güvenle geri dönebileceğim bir rehbere sahip olmak istiyorum',
+      story: '<b>ML Mühendisi olarak</b>, production\'da model bozulduğunda gece yarısı panikle karar almak yerine, <b>adım adım takip edebileceğim bir rollback playbook\'um</b> olmasını istiyorum; <b>böylece</b> kriz anında net ve hızlı hareket edebileyim.',
+      desc: 'Son olaydan öğrendiklerimize dayanarak: (1) canary traffic ayarlama, (2) Istio + KServe senkronizasyonu, (3) SLO kontrolü, (4) rollback karar matrisi. Aslı tarafından yazıldı, inceleme için hazır.',
+      ac: [
+        ['Confluence\'ta playbook dokümanı oluşturulmalı', true],
+        ['5 Whys şablonu içermeli', true],
+        ['Ekip içi mini workshop ile doğrulanmalı', false],
+        ['ML chapter paylaşımına eklenmeli', false]
+      ],
+      activity: [
+        {who:'Aslı', ini:'AY', clr:'a-asli', txt:'Olay sonrası taslağı yazdı', time:'3 gün önce · 11:00'},
+        {who:'Aslı', ini:'AY', clr:'a-asli', txt:'Review için atadı', time:'Dün · 15:20'}
+      ],
+      status:'review', statusLabel:'İNCELEME', type:'TECH', typeColor:'t-tech',
+      assignee:{name:'Aslı Yıldırım', ini:'AY', role:'ML Engineer', clr:'a-asli'},
+      points:2, priority:'P2 · Önemli',
+      labels:[{t:'ML',c:'t-ml'},{t:'TECH',c:'t-tech'}],
+      link:'#ml-platform-squad'
+    },
+    'PAY-2094': {
+      title: 'İşyeri olarak, 3DS iptal edildiğinde müşterinin neden vazgeçtiğini görmek istiyorum',
+      story: '<b>İşyeri sahibi olarak</b>, müşterim 3DS doğrulama ekranında vazgeçtiğinde, <b>bu olayın bildirim olarak bana gelmesini</b> istiyorum; <b>böylece</b> dönüşüm oranlarımı analiz edip pazarlama stratejimi iyileştirebileyim.',
+      desc: '3DS iptali şu an frontend\'de loglanıyor ama merchant panele yansımıyor. Webhook ekleyip panel üzerinden özet göstermek gerekiyor.',
+      ac: [
+        ['3DS iptal eventi backend\'de yakalanmalı', false],
+        ['Merchant panele yansımalı', false],
+        ['Günlük/haftalık rapor olarak toplanmalı', false]
+      ],
+      activity: [
+        {who:'Elif', ini:'EA', clr:'a-elif', txt:'Satış ekibinden talep geldi, backlog\'a ekledi', time:'4 gün önce · 10:30'}
+      ],
+      status:'backlog', statusLabel:'YAPILACAK', type:'FEAT', typeColor:'t-feat',
+      assignee:{name:'Kaya Tunç', ini:'KT', role:'Senior Backend Dev', clr:'a-kaya'},
+      points:3, priority:'P2 · Önemli',
+      labels:[{t:'BE',c:'t-be'},{t:'FEAT',c:'t-feat'},{t:'P2',c:'t-p2'}],
+      link:''
+    },
+    'PAY-2080': {
+      title: 'ML Mühendisi olarak, bozulan modeli acilen eski sürüme çekmek istiyorum',
+      story: '<b>Nöbetçi ML Mühendisi olarak</b>, fraud modelinin precision\'ı kritik seviyeye düştüğünde, <b>v2.1.7 eski sürüme shadow mode üzerinden güvenli geçiş yapmak</b> istedim; <b>böylece</b> müşteri etkisini minimize edip ardından kök sebebi rahatça araştırabildik.',
+      desc: 'Production olayı: fraud detection precision %94\'ten %71\'e düştü. Feature skew tespit edildi (data drift değil). v2.1.7\'ye geri dönüldü, precision normale indi.',
+      ac: [
+        ['Shadow mode ile %10 traffic eski sürüme', true],
+        ['SLO kontrolü sonrası tam rollback', true],
+        ['Metric\'ler normalleşmeli', true],
+        ['Postmortem açılmalı', true]
+      ],
+      activity: [
+        {who:'Aslı', ini:'AY', clr:'a-asli', txt:'Acil ticket açtı', time:'3 gün önce · 05:22'},
+        {who:'Burak', ini:'BÖ', clr:'a-burak', txt:'Istio ve KServe ayarlarını güncelledi', time:'3 gün önce · 05:38'},
+        {who:'Aslı', ini:'AY', clr:'a-asli', txt:'Rollback tamamlandı 🟢', time:'3 gün önce · 06:17'},
+        {who:'Aslı', ini:'AY', clr:'a-asli', txt:'Durumu <b>Bitti</b>\'ye çekti', time:'3 gün önce · 06:20'}
+      ],
+      status:'done', statusLabel:'BİTTİ', type:'BUG', typeColor:'t-bug',
+      assignee:{name:'Aslı Yıldırım', ini:'AY', role:'ML Engineer', clr:'a-asli'},
+      points:3, priority:'P1 · Acil',
+      labels:[{t:'ML',c:'t-ml'},{t:'BUG',c:'t-bug'},{t:'P1',c:'t-p1'}],
+      link:'#ml-platform-squad'
+    }
+  };
+
+  // Default fallback data for cards without full data
+  function getCardData(id) {
+    if (cardData[id]) return cardData[id];
+    // Generic fallback: read from card element
+    const el = document.querySelector(`[data-card-id="${id}"]`);
+    if (!el) return null;
+    const titleEl = el.querySelector('.ctitle');
+    const statusMap = {'c-backlog':['backlog','YAPILACAK'],'c-progress':['progress','YAPILIYOR'],'c-review':['review','İNCELEME'],'c-done':['done','BİTTİ']};
+    const col = el.closest('.col');
+    let statusKey='backlog', statusLabel='YAPILACAK';
+    for (const [cls, [k, lbl]] of Object.entries(statusMap)) {
+      if (col && col.classList.contains(cls)) { statusKey=k; statusLabel=lbl; }
+    }
+    const assignEl = el.querySelector('.cassign');
+    const ptsEl = el.querySelector('.cpoints b');
+    const tagEls = Array.from(el.querySelectorAll('.tagchip')).map(t => ({t:t.textContent, c:Array.from(t.classList).find(c=>c.startsWith('t-'))||''}));
+    return {
+      title: titleEl ? titleEl.textContent : id,
+      story: '<b>Ekip olarak</b>, bu işi planlayıp hayata geçirmek istiyoruz; <b>böylece</b> ürünümüzü daha iyi bir yere taşıyalım.',
+      desc: 'Detaylı açıklama ekip tarafından yazılacak.',
+      ac: [
+        ['Gereksinimler netleştirilmeli', false],
+        ['Tasarım onayı alınmalı', false],
+        ['Testler yazılmalı', false]
+      ],
+      activity: [
+        {who:'Elif', ini:'EA', clr:'a-elif', txt:'Ticket\'ı backlog\'a ekledi', time:'Bu hafta'}
+      ],
+      status:statusKey, statusLabel:statusLabel, type:'TASK', typeColor:'t-tech',
+      assignee:{name: assignEl ? assignEl.textContent : '—', ini: assignEl ? assignEl.textContent : '—', role:'—', clr: assignEl ? Array.from(assignEl.classList).find(c=>c.startsWith('a-'))||'' : ''},
+      points: ptsEl ? ptsEl.textContent : '—', priority:'—',
+      labels: tagEls,
+      link: ''
+    };
+  }
+
+  const modal = document.getElementById('card-modal');
+  const mId = document.getElementById('m-id');
+  const mStatus = document.getElementById('m-status');
+  const mType = document.getElementById('m-type');
+  const mTitle = document.getElementById('m-title');
+  const mStory = document.getElementById('m-story');
+  const mDesc = document.getElementById('m-desc');
+  const mAc = document.getElementById('m-ac');
+  const mActivity = document.getElementById('m-activity');
+  const mAssignee = document.getElementById('m-assignee');
+  const mPoints = document.getElementById('m-points');
+  const mPriority = document.getElementById('m-priority');
+  const mLabels = document.getElementById('m-labels');
+  const mLink = document.getElementById('m-link');
+  const mClose = document.getElementById('m-close');
+
+  function openModal(cardId) {
+    const d = getCardData(cardId);
+    if (!d) return;
+    mId.textContent = cardId;
+    mStatus.textContent = d.statusLabel;
+    mStatus.className = 'status-pill ' + d.status;
+    mType.textContent = d.type;
+    mType.className = 'tagchip ' + (d.typeColor || 't-tech');
+    mTitle.textContent = d.title;
+    mStory.innerHTML = d.story;
+    mDesc.textContent = d.desc;
+
+    mAc.innerHTML = '';
+    d.ac.forEach(([txt, done]) => {
+      const li = document.createElement('li');
+      li.innerHTML = txt;
+      if (done) li.classList.add('done');
+      mAc.appendChild(li);
+    });
+
+    mActivity.innerHTML = '';
+    d.activity.forEach(a => {
+      const item = document.createElement('div');
+      item.className = 'activity-item';
+      item.innerHTML = `
+        <div class="activity-dot ${a.clr}">${a.ini}</div>
+        <div class="activity-content">
+          <span><b>${a.who}</b> ${a.txt}</span>
+          <span class="time">${a.time}</span>
+        </div>
+      `;
+      mActivity.appendChild(item);
+    });
+
+    mAssignee.innerHTML = `
+      <div class="cassign ${d.assignee.clr}">${d.assignee.ini}</div>
+      <div>
+        <div style="font-size:13px;color:var(--ink-bright);font-weight:600">${d.assignee.name}</div>
+        <div style="font-size:11px;color:var(--ink-muted)">${d.assignee.role}</div>
+      </div>
+    `;
+    mPoints.textContent = d.points + ' SP';
+    mPriority.textContent = d.priority;
+
+    mLabels.innerHTML = '';
+    d.labels.forEach(l => {
+      const sp = document.createElement('span');
+      sp.className = 'tagchip ' + l.c;
+      sp.textContent = l.t;
+      mLabels.appendChild(sp);
+    });
+
+    mLink.textContent = d.link || '—';
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.card[data-card-id]').forEach(card => {
+    card.addEventListener('click', () => openModal(card.dataset.cardId));
+  });
+
+  mClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+</script>
+</body>
+</html>
