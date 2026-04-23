@@ -1,0 +1,8 @@
+[build]
+  publish = "/"
+  command = ""
+
+[[redirects]]
+  from = "/*"
+  to = "/lightning_talks_slack.html"
+  status = 200
