@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunum Rehberi · Akçe Slack Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0d10;
+    --panel:#13161b;
+    --panel-2:#1a1e25;
+    --border:#262b33;
+    --border-2:#363c47;
+    --ink:#c9cfd9;
+    --ink-bright:#f0f3f7;
+    --ink-muted:#8a93a3;
+    --blue:#4a9eff;
+    --green:#48c78e;
+    --yellow:#ecb22e;
+    --purple:#b68cff;
+    --red:#e01e5a;
+    --orange:#ff6a3d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:"Inter",sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:"JetBrains Mono",monospace;font-size:.92em;background:rgba(74,158,255,.08);border:1px solid rgba(74,158,255,.2);padding:1px 6px;border-radius:4px;color:var(--blue)}
+  b{color:var(--ink-bright);font-weight:600}
+
+  .wrap{max-width:980px;margin:0 auto;padding:48px 28px 80px}
+
+  /* HERO */
+  .hero{
+    border:1px solid var(--border);background:linear-gradient(135deg, rgba(74,158,255,.08), rgba(182,140,255,.05));
+    border-radius:14px;padding:38px 36px;margin-bottom:36px;position:relative;overflow:hidden;
+  }
+  .hero .kicker{
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--blue);
+    text-transform:uppercase;letter-spacing:.2em;margin-bottom:14px;
+  }
+  .hero h1{
+    font-size:38px;font-weight:800;color:var(--ink-bright);
+    letter-spacing:-.02em;line-height:1.15;margin:0 0 14px;
+  }
+  .hero p{font-size:16px;color:var(--ink);max-width:680px;margin:0}
+  .hero .meta{
+    display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;
+  }
+  .hero .meta .chip{
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink-muted);
+    border:1px solid var(--border);background:var(--panel);padding:5px 10px;border-radius:5px;
+  }
+
+  /* TOC */
+  .toc{
+    border:1px solid var(--border);border-radius:10px;background:var(--panel);
+    padding:22px 24px;margin-bottom:40px;
+  }
+  .toc h2{
+    font-size:13px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.15em;
+    margin:0 0 14px;font-weight:700;
+  }
+  .toc ol{margin:0;padding:0;list-style:none;counter-reset:tocnum}
+  .toc ol li{
+    counter-increment:tocnum;padding:8px 0;border-bottom:1px dashed var(--border);
+    display:flex;align-items:baseline;gap:14px;
+  }
+  .toc ol li:last-child{border-bottom:none}
+  .toc ol li::before{
+    content:counter(tocnum, decimal-leading-zero);
+    font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-muted);
+    min-width:32px;
+  }
+  .toc ol li a{color:var(--ink-bright);font-weight:500;flex:1;font-size:15px}
+  .toc ol li .dur{
+    font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-muted);
+    background:rgba(0,0,0,.3);padding:2px 8px;border-radius:4px;
+  }
+
+  /* GENERAL TIPS BANNER */
+  .tips{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:48px;
+  }
+  .tip{
+    border:1px solid var(--border);background:var(--panel);border-radius:10px;
+    padding:18px 18px;
+  }
+  .tip .ic{font-size:22px;margin-bottom:8px;display:block}
+  .tip .lbl{
+    font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-muted);
+    text-transform:uppercase;letter-spacing:.15em;margin-bottom:6px;
+  }
+  .tip .txt{font-size:13.5px;color:var(--ink);line-height:1.5}
+
+  /* SECTION */
+  section.step{
+    border:1px solid var(--border);border-radius:12px;background:var(--panel);
+    margin-bottom:28px;overflow:hidden;
+  }
+  .step-head{
+    padding:22px 28px;border-bottom:1px solid var(--border);
+    background:var(--panel-2);display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    position:sticky;top:0;z-index:5;
+  }
+  .step-num{
+    font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:600;
+    background:var(--blue);color:#0b0d10;padding:5px 11px;border-radius:6px;letter-spacing:.05em;
+  }
+  .step-num.intro{background:var(--purple)}
+  .step-num.tribe{background:var(--green)}
+  .step-num.kanban{background:var(--yellow);color:#0b0d10}
+  .step-num.chat{background:var(--blue)}
+  .step-num.solve{background:var(--orange)}
+  .step-head h2{
+    font-size:22px;font-weight:800;color:var(--ink-bright);margin:0;letter-spacing:-.015em;flex:1;
+  }
+  .step-head .where{
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink-muted);
+    border:1px solid var(--border-2);padding:4px 9px;border-radius:5px;
+  }
+  .step-head .dur-pill{
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink-bright);
+    background:rgba(72,199,142,.15);border:1px solid rgba(72,199,142,.3);padding:4px 9px;border-radius:5px;
+  }
+
+  .step-body{padding:24px 28px 28px}
+
+  .block{margin-bottom:22px}
+  .block:last-child{margin-bottom:0}
+  .block-label{
+    font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-muted);
+    text-transform:uppercase;letter-spacing:.18em;margin-bottom:10px;font-weight:600;
+  }
+  .block p{margin:0 0 10px;font-size:14.5px}
+  .block p:last-child{margin-bottom:0}
+
+  /* CONCEPT TABLE */
+  .concepts{
+    display:grid;grid-template-columns:minmax(180px,220px) 1fr;
+    gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  }
+  .concept-row{
+    display:contents;
+  }
+  .concept-row .term, .concept-row .def{
+    padding:11px 14px;border-bottom:1px solid var(--border);font-size:13.5px;
+  }
+  .concept-row:last-child .term, .concept-row:last-child .def{border-bottom:none}
+  .concept-row .term{
+    font-family:"JetBrains Mono",monospace;font-size:12.5px;
+    background:rgba(0,0,0,.18);color:var(--blue);font-weight:500;
+    border-right:1px solid var(--border);
+  }
+  .concept-row .def{color:var(--ink);line-height:1.5}
+  .concept-row .def b{color:var(--ink-bright)}
+
+  /* SAY (anlatım dili) */
+  .say{
+    background:rgba(74,158,255,.06);border-left:3px solid var(--blue);
+    padding:14px 18px;border-radius:0 6px 6px 0;
+    font-size:14.5px;color:var(--ink);line-height:1.65;font-style:italic;
+  }
+  .say::before{
+    content:"💬 ";
+    font-style:normal;
+  }
+
+  /* CHECKLIST */
+  ul.check{margin:0;padding:0;list-style:none}
+  ul.check li{
+    padding:6px 0 6px 26px;font-size:14px;position:relative;
+  }
+  ul.check li::before{
+    content:"✓";position:absolute;left:4px;top:6px;
+    color:var(--green);font-weight:700;
+  }
+
+  /* PITFALL */
+  .pitfall{
+    background:rgba(224,30,90,.06);border:1px solid rgba(224,30,90,.25);
+    border-radius:8px;padding:14px 18px;font-size:13.5px;
+  }
+  .pitfall b{color:#ff7aa6}
+  .pitfall::before{content:"⚠️ ";margin-right:4px}
+
+  /* HIGHLIGHT */
+  .hl{
+    background:rgba(236,178,46,.06);border:1px solid rgba(236,178,46,.25);
+    border-radius:8px;padding:14px 18px;font-size:13.5px;
+  }
+  .hl::before{content:"💡 ";margin-right:4px}
+  .hl b{color:var(--yellow)}
+
+  /* CONCLUSION */
+  .closing{
+    border:1px solid rgba(72,199,142,.3);background:linear-gradient(135deg, rgba(72,199,142,.08), rgba(74,158,255,.06));
+    border-radius:12px;padding:32px 36px;margin-top:40px;
+  }
+  .closing h2{
+    font-size:24px;color:var(--ink-bright);margin:0 0 14px;letter-spacing:-.015em;
+  }
+  .closing p{font-size:15px;color:var(--ink);margin:0 0 12px}
+  .closing .qs{
+    margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  }
+  .closing .q{
+    background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:6px;
+    padding:12px 14px;font-size:13px;color:var(--ink);
+  }
+  .closing .q b{color:var(--green);display:block;margin-bottom:4px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+
+  @media (max-width:760px){
+    .wrap{padding:24px 16px 60px}
+    .hero{padding:26px 22px}
+    .hero h1{font-size:28px}
+    .tips{grid-template-columns:1fr}
+    .closing .qs{grid-template-columns:1fr}
+    .concepts{grid-template-columns:1fr}
+    .concept-row .term{border-right:none;border-bottom:1px solid var(--border-2)}
+    .step-head{padding:16px 18px}
+    .step-body{padding:18px 18px 22px}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="kicker">Sunum Rehberi · Anlatıcı için</div>
+    <h1>Akçe Slack Demo'sunu adım adım nasıl anlatırsın?</h1>
+    <p>Bu rehber, <code>lightning_talks_slack.html</code> dosyasını başkalarına gösterirken hangi sırayla ilerleyeceğini, her sayfada hangi kavramları açıklayacağını ve hangi noktalarda ne diyeceğini içerir. Hiçbir şey atlanmasın diye sayfa sayfa düzenlendi.</p>
+    <div class="meta">
+      <span class="chip">⏱ Tahmini süre: 25–35 dk</span>
+      <span class="chip">🎯 Hedef: Yazılım kavramlarını teknik olmayan birine anlatmak</span>
+      <span class="chip">📑 9 sayfa · 1 sonsöz</span>
+    </div>
+  </section>
+
+  <!-- TIPS -->
+  <div class="tips">
+    <div class="tip">
+      <span class="ic">🎬</span>
+      <div class="lbl">Açılış</div>
+      <div class="txt">İlk 30 saniyede <b>"Bugün size hayali bir ödeme şirketinin Slack'inden bir gün göstereceğim"</b> de. İçeriği aynen okuma — anlat.</div>
+    </div>
+    <div class="tip">
+      <span class="ic">🧭</span>
+      <div class="lbl">Sıra</div>
+      <div class="txt">Sol kenardaki sıraya birebir uy: <b>Tanı (A→B→C) → Sohbetler (1→2→3→4→5) → Çözüm (6)</b>. Her bölüm bir öncekinin üstüne kuruluyor.</div>
+    </div>
+    <div class="tip">
+      <span class="ic">⏸</span>
+      <div class="lbl">Tempo</div>
+      <div class="txt">Her sayfada <b>1 ana fikir + en fazla 3 kavram</b> hedefle. Tüm jargonu tek seferde öğretmeye çalışma — Çözüm sayfası bunun için var.</div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>Sunum Akışı</h2>
+    <ol>
+      <li><a href="#s1">Açılış · Sahneyi kur</a><span class="dur">2 dk</span></li>
+      <li><a href="#s2">Sayfa A · Şirket (Akçe Ödeme Sistemleri)</a><span class="dur">3 dk</span></li>
+      <li><a href="#s3">Sayfa B · Tribe yapısı (Spotify modeli)</a><span class="dur">4 dk</span></li>
+      <li><a href="#s4">Sayfa C · Kanban board (6 sütunlu)</a><span class="dur">4 dk</span></li>
+      <li><a href="#s5">Sohbet 01 · pod-checkout-sync (idempotency krizi)</a><span class="dur">3 dk</span></li>
+      <li><a href="#s6">Sohbet 02 · payments-squad (eşit konuşma)</a><span class="dur">3 dk</span></li>
+      <li><a href="#s7">Sohbet 03 · ml-platform-squad (gece nöbeti)</a><span class="dur">3 dk</span></li>
+      <li><a href="#s8">Sohbet 04 · arch-rfc-review (iki lider farklı bakış)</a><span class="dur">3 dk</span></li>
+      <li><a href="#s9">Sohbet 05 · daily-standup (10 dakikada bir gün)</a><span class="dur">2 dk</span></li>
+      <li><a href="#s10">Sayfa 06 · Çözüm — terimlerin insanca karşılığı</a><span class="dur">3 dk</span></li>
+      <li><a href="#s11">Kapanış · Soru-cevap</a><span class="dur">3+ dk</span></li>
+    </ol>
+  </div>
+
+  <!-- ============ STEP 1 · OPENING ============ -->
+  <section class="step" id="s1">
+    <div class="step-head">
+      <span class="step-num intro">00</span>
+      <h2>Açılış · Sahneyi kur</h2>
+      <span class="dur-pill">≈ 2 dk</span>
+    </div>
+    <div class="step-body">
+
+      <div class="block">
+        <div class="block-label">Amaç</div>
+        <p>Dinleyiciye <b>bağlamı</b> ver: bu bir gerçek şirket değil, ama gerçek bir günde olabilecek bir senaryo. "Yazılım ekipleri nasıl çalışır, neden bu kadar terim kullanırlar?" sorusuna cevap arayacağız.</p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Anlatım dili (örnek)</div>
+        <div class="say">Bugün size <b>Akçe Ödeme Sistemleri</b> adında hayali bir ödeme şirketinin Slack'ini göstereceğim. Önce şirketi ve ekiplerin nasıl bölündüğünü anlayacağız. Sonra ekibin <b>kanban tahtasını</b> göreceğiz — yani işlerin nasıl takip edildiğini. Ardından beş tane gerçek sohbete bakacağız: gece yarısı bir alarm, bir mimari tartışma, bir günlük toplantı… En sonunda da bütün o tuhaf terimleri <b>tek tek çevireceğiz</b>.</div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Açılışta yapma</div>
+        <div class="pitfall"><b>Tüm terimleri burada tanımlama.</b> "Sprint, idempotency, retro…" diye liste yapma — kavramlar geçtikleri yerde anlatılırsa akılda kalır. Çözüm sayfası en sonda zaten hepsini topluyor.</div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Geçiş cümlesi</div>
+        <div class="say">Hadi önce şirketin kim olduğuna bakalım — sol kenardan <b>Şirket</b> sekmesini açıyorum.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ STEP 2 · COMPANY ============ -->
+  <section class="step" id="s2">
+    <div class="step-head">
+      <span class="step-num intro">A</span>
+      <h2>Sayfa A · Şirket (Akçe Ödeme Sistemleri)</h2>
+      <span class="where">Sol menü → <b>🏢 Şirket</b></span>
+      <span class="dur-pill">≈ 3 dk</span>
+    </div>
+    <div class="step-body">
+
+      <div class="block">
+        <div class="block-label">Bu sayfada ne var?</div>
+        <p>Şirketin ne iş yaptığı, kaç çalışanı olduğu, hangi ürünleri sunduğu, değerleri ve yıllık metrikleri. Yani <b>"Burası nasıl bir yer?"</b> sorusunun cevabı.</p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Sırasıyla anlat</div>
+        <ul class="check">
+          <li><b>Şirket kimliği:</b> "Akçe Ödeme Sistemleri — Türkiye merkezli, e-ticaret işyerleri için ödeme altyapısı sağlar." Tek cümleyle bitir.</li>
+          <li><b>Sayılar:</b> 280 çalışan, milyonlarca işlem, %99.97 uptime gibi rakamları işaret et — ama tek tek okuma, "büyük bir şirket" hissi yeterli.</li>
+          <li><b>Ürünler:</b> Sadece "ödeme alıyorlar, dolandırıcılık yakalıyorlar, raporluyorlar" diyerek özetle.</li>
+          <li><b>Değerler:</b> "Nasıl çalışırlar"ı tarif eder. Bunlar dinleyiciye <b>kültürü</b> hissettirir.</li>
+        </ul>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Geçiş cümlesi</div>
+        <div class="say">Şirket büyüyünce 280 kişi tek bir grupta çalışamıyor — <b>nasıl bölündüklerine</b> bakalım.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ STEP 3 · TRIBE ============ -->
+  <section class="step" id="s3">
+    <div class="step-head">
+      <span class="step-num tribe">B</span>
+      <h2>Sayfa B · Tribe yapısı (Spotify modeli)</h2>
+      <span class="where">Sol menü → <b>🧬 Tribe Yapısı</b></span>
+      <span class="dur-pill">≈ 4 dk</span>
+    </div>
+    <div class="step-body">
+
+      <div class="block">
+        <div class="block-label">Bu sayfanın ana fikri</div>
+        <p>Büyük yazılım şirketleri ekiplerini <b>Spotify modeli</b> denen bir yapıda örgütler. Bunu bir matris gibi düşün: <b>yatayda squad'lar</b> (ürün ekipleri), <b>dikeyde chapter'lar</b> (uzmanlık alanları). Bir kişi hem bir squad'da hem bir chapter'da yer alır.</p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Açıklanacak kavramlar</div>
+        <div class="concepts">
+          <div class="concept-row"><div class="term">tribe</div><div class="def">İlişkili birkaç squad'ın bir araya geldiği büyük çatı. Bu projede "Ödeme Omurgası Tribe" — 4 squad, 32 kişi.</div></div>
+          <div class="concept-row"><div class="term">squad</div><div class="def">Belli bir ürüne / probleme odaklanmış küçük tam-yetkili ekip. Örn: <b>Checkout Squad</b> ödeme ekranından sorumlu.</div></div>
+          <div class="concept-row"><div class="term">chapter</div><div class="def">Aynı uzmanlığı paylaşan kişiler (tüm Backend'çiler bir chapter, tüm Frontend'çiler başka bir chapter). Bilgi paylaşır, standart belirler.</div></div>
+          <div class="concept-row"><div class="term">guild</div><div class="def">Şirket çapında, ortak ilgi alanı olan kişilerin gönüllü topluluğu. Örn: <b>Ödeme Güvenliği Guild</b> — her tribe'dan üyeler.</div></div>
+          <div class="concept-row"><div class="term">PO (Product Owner)</div><div class="def">Squad'ın ne yapacağına karar veren kişi. "Ne" sorusunun sahibi (nasıl yapılacağı ekibe ait).</div></div>
+          <div class="concept-row"><div class="term">chapter lead</div><div class="def">Bir uzmanlık alanının lideri. Hem kendi işini yapar, hem o alandaki kişilere mentorluk eder.</div></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Anlatım dili (örnek)</div>
+        <div class="say">Düşün ki şirket bir okul. <b>Squad</b> bir <b>sınıf</b> gibi — birlikte bir projeye odaklanır. <b>Chapter</b> ise <b>branş öğretmenleri</b> gibi — matematik öğretmenleri kendi aralarında konuşur, ortak müfredatı belirler. Bir kişi hem 7-A sınıfında hem matematik branşında olabilir.</div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Önemli vurgu</div>
+        <div class="hl"><b>Bu yapıyı niye öğrendin?</b> Çünkü sonraki sohbetlerde "Mert, Backend Chapter Lead" yazdığında bunun ne anlama geldiğini bileceksin. İlişkileri okuyabilmek için temel bu.</div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Geçiş cümlesi</div>
+        <div class="say">Peki bu <b>Checkout Squad'ı</b> bugünlerde ne işlerle uğraşıyor? Cevap kanban tahtasında.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ STEP 4 · KANBAN ============ -->
+  <section class="step" id="s4">
+    <div class="step-head">
+      <span class="step-num kanban">C</span>
+      <h2>Sayfa C · Kanban board (6 sütunlu)</h2>
+      <span class="where">Sol menü → <b>📋 Kanban Board</b></span>
+      <span class="dur-pill">≈ 4 dk</span>
+    </div>
+    <div class="step-body">
+
+      <div class="block">
+        <div class="block-label">Bu sayfada ne var?</div>
+        <p>Checkout Squad'ın aktif sprint'inin görsel hali. Her sütun bir <b>iş durumu</b>, her kart bir <b>iş parçası</b> (user story).</p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">6 sütunu tek tek anlat</div>
+        <div class="concepts">
+          <div class="concept-row"><div class="term">📥 Yapılacak</div><div class="def">Sıraya alınmış ama henüz başlanmamış işler. <b>Backlog.</b></div></div>
+          <div class="concept-row"><div class="term">⚡ Yapılıyor</div><div class="def">Şu an aktif olarak üzerinde çalışılan kartlar.</div></div>
+          <div class="concept-row"><div class="term">🚫 Engellendi</div><div class="def">Ekip dışı bir bağımlılık yüzünden (banka, hukuk, başka takım) ilerleyemeyen işler. Görünür kalmalı ki unutulmasın.</div></div>
+          <div class="concept-row"><div class="term">👀 İnceleme</div><div class="def">İş bitti, başka biri kontrol ediyor (code review).</div></div>
+          <div class="concept-row"><div class="term">🧪 Test</div><div class="def">Kod onaylandı, QA test ediyor / staging'de doğrulanıyor.</div></div>
+          <div class="concept-row"><div class="term">✅ Bitti</div><div class="def">Tamamlandı ve kapatıldı.</div></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Kart üzerinden anlat</div>
+        <ul class="check">
+          <li><b>PAY-2089</b> kartını aç (üstte tıklanır). Bir <b>user story</b>'nin yapısını göster: "Kullanıcı olarak, ... istiyorum, çünkü ..."</li>
+          <li><b>Etiketler</b> (BE/FE/QA/UX) işin <b>kim tarafından yapılacağını</b>, P1-P4 ise <b>önceliği</b> belirtir.</li>
+          <li><b>Story points</b> (sp): "Bu iş ne kadar zor / büyük?" tahmini. Saat değil — büyüklük.</li>
+          <li><b>Engellendi sütunundaki PAY-2090</b>'a dikkat çek: bankayla anlaşma beklediği için takılı. Sohbet 01'de bunun konuşmasını göreceğiz.</li>
+        </ul>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Açıklanacak kavramlar</div>
+        <div class="concepts">
+          <div class="concept-row"><div class="term">sprint</div><div class="def">Genelde 2 haftalık kısa çalışma dönemi. Ekip bu sürede belli işleri bitirmeye söz verir.</div></div>
+          <div class="concept-row"><div class="term">user story</div><div class="def">"X olarak, Y istiyorum, çünkü Z" formatında yazılmış iş tanımı. İşi kullanıcı gözünden anlatır.</div></div>
+          <div class="concept-row"><div class="term">story point</div><div class="def">İşin tahmini büyüklüğü/zorluğu. Saat değil; "küçük-orta-büyük" hissi.</div></div>
+          <div class="concept-row"><div class="term">backlog</div><div class="def">Henüz başlanmamış, sıraya konmuş işler havuzu.</div></div>
+          <div class="concept-row"><div class="term">P1 / P2 / P3 / P4</div><div class="def">Öncelik seviyeleri. P1 "Acil — şimdi", P4 "İsteğe bağlı".</div></div>
+          <div class="concept-row"><div class="term">burn (down)</div><div class="def">Sprint boyunca kalan işin azalmasını gösteren grafik. Üstteki "Burn 28 / 74" — 74 sp'nin 28'i bitmiş.</div></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Geçiş cümlesi</div>
+        <div class="say">Bu kartların arkasındaki <b>insanlar</b> ne konuşuyor? Hadi sohbetlere bakalım.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ STEP 5 · CHAT 1 ============ -->
+  <section class="step" id="s5">
+    <div class="step-head">
+      <span class="step-num chat">01</span>
+      <h2>Sohbet 01 · pod-checkout-sync</h2>
+      <span class="where">Sol menü → <b># pod-checkout-sync</b></span>
+      <span class="dur-pill">≈ 3 dk</span>
+    </div>
+    <div class="step-body">
+
+      <div class="block">
+        <div class="block-label">Hikâye</div>
+        <p>Müşterilerden "iki kez para çekildi" şikayetleri geliyor. PO Elif acil bayrak kaldırıyor. Backend Lead Mert <b>"acele etmeyelim, kökü bulalım"</b> diyor. SRE Burak grafiklere bakıp problem büyüklüğünü doğruluyor. Sonunda işi <b>tek bir epic</b> altında parça parça bölmeye karar veriyorlar.</p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Açıklanacak kavramlar</div>
+        <div class="concepts">
+          <div class="concept-row"><div class="term">idempotency</div><div class="def">Aynı işlemin birden çok kez yapılsa bile <b>sadece bir kez</b> etki yaratması. "Ödeme butonuna 3 kere bassan bile 1 kez ücretlendirilirsin" demek.</div></div>
+          <div class="concept-row"><div class="term">epic</div><div class="def">Birden çok küçük işi kapsayan <b>çatı görev</b>. "İki kez tahsilat sorununu çöz" → altında 5 küçük kart.</div></div>
+          <div class="concept-row"><div class="term">velocity</div><div class="def">Ekibin bir sprintte ortalama bitirdiği iş miktarı. Takımın hızı.</div></div>
+          <div class="concept-row"><div class="term">war room</div><div class="def">Bir krize odaklanmak için herkesin bir araya geldiği geçici toplantı.</div></div>
+          <div class="concept-row"><div class="term">retro (retrospective)</div><div class="def">Sprint sonu toplantısı: "Neler iyi gitti? Neyi bir daha yapmayalım?"</div></div>
+          <div class="concept-row"><div class="term">DoD (definition of done)</div><div class="def">"Bu iş ne zaman gerçekten bitmiş sayılır?" için önceden anlaşılmış kriterler.</div></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Vurgu</div>
+        <div class="hl">Bu sohbetin asıl dersi <b>kavramlar değil</b>: Mert "panik yapma, kökü bul" diyor — <b>iyi mühendislerin acelecilik yerine sebep aradığını</b> göster.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ STEP 6 · CHAT 2 ============ -->
+  <section class="step" id="s6">
+    <div class="step-head">
+      <span class="step-num chat">02</span>
+      <h2>Sohbet 02 · payments-squad</h2>
+      <span class="where">Sol menü → <b># payments-squad</b></span>
+      <span class="dur-pill">≈ 3 dk</span>
+    </div>
+    <div class="step-body">
+
+      <div class="block">
+        <div class="block-label">Hikâye</div>
+        <p>Junior geliştirici Deniz bir hatada takılmış, açıkça "biri pair yapabilir mi?" diye soruyor. Senior Kaya 5 dakikada tanı koyuyor. QA Nazlı "uç durumları da test edelim" diyor. UX'ten Leyla "kullanıcı ne görüyor?" diye sorunun yönünü değiştiriyor. <b>Herkes eşit konuşuyor.</b></p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Açıklanacak kavramlar</div>
+        <div class="concepts">
+          <div class="concept-row"><div class="term">test (unit / integration)</div><div class="def">Kodun doğru çalışıp çalışmadığını otomatik kontrol eden küçük programlar.</div></div>
+          <div class="concept-row"><div class="term">commit</div><div class="def">Bir değişikliği "tamam, kaydedildi" demek. Kod versiyon sistemine yazma.</div></div>
+          <div class="concept-row"><div class="term">rollback</div><div class="def">Bir işlemi yarıda kesip başlangıç haline döndürmek. Geri alma.</div></div>
+          <div class="concept-row"><div class="term">flaky test</div><div class="def">"Bazen geçen bazen geçmeyen" tutarsız test. En sinir bozucu şeylerden biri.</div></div>
+          <div class="concept-row"><div class="term">edge case</div><div class="def">Normal akışın dışında kalan uç durumlar. "Ya internet kesilirse?" senaryoları.</div></div>
+          <div class="concept-row"><div class="term">race condition</div><div class="def">İki işlemin aynı anda olup birbirine karışması. <b>Yarış durumu.</b></div></div>
+          <div class="concept-row"><div class="term">happy path</div><div class="def">Her şeyin yolunda gittiği "mutlu senaryo." Testlerin başladığı yer.</div></div>
+          <div class="concept-row"><div class="term">code review</div><div class="def">Birinin yazdığı kodu başka birinin okuyup önerilerde bulunması. 4 göz 2 gözden iyidir.</div></div>
+          <div class="concept-row"><div class="term">pair programming</div><div class="def">İki kişinin tek ekran başında birlikte kod yazması. Bilgi transferinin en hızlı yolu.</div></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Vurgu</div>
+        <div class="hl">Burada teknik kavramlardan çok <b>kültür</b>: <b>"Soru sormak güçsüzlük değil."</b> Deniz açıkça yardım istiyor, kimse takılmıyor. Bu sağlıklı bir takımın işaretidir.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ STEP 7 · CHAT 3 ============ -->
+  <section class="step" id="s7">
+    <div class="step-head">
+      <span class="step-num chat">03</span>
+      <h2>Sohbet 03 · ml-platform-squad</h2>
+      <span class="where">Sol menü → <b># ml-platform-squad</b></span>
+      <span class="dur-pill">≈ 3 dk</span>
+    </div>
+    <div class="step-body">
+
+      <div class="block">
+        <div class="block-label">Hikâye</div>
+        <p>Gece yarısı alarm. Dolandırıcılık modelinin <b>doğruluğu (precision)</b> %94'ten %71'e düşmüş. Aslı (ML) tanı koyuyor: <b>sorun modelde değil, modele giden veride</b>. Aslı kısa vadeli çözüm yapıyor (eski sürüme dön — rollback), Tolga uzun vadeli plan kuruyor (alarm ekle, kalite kontrolü kur). <b>Kimseyi suçlamıyorlar.</b></p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Açıklanacak kavramlar</div>
+        <div class="concepts">
+          <div class="concept-row"><div class="term">model</div><div class="def">Verilerden öğrenerek karar veren program. Burada: hangi ödeme dolandırıcılık mı karar veriyor.</div></div>
+          <div class="concept-row"><div class="term">precision</div><div class="def">"Dolandırıcılık dedim, gerçekten öyleydi" oranı. %94'ten %71'e düşmek: her 100 alarmın 30'u yanlışmış.</div></div>
+          <div class="concept-row"><div class="term">data drift / skew</div><div class="def">Modele gelen verilerin zamanla değişmesi. Model eski verilerle eğitilmiş, yeni verileri tanımıyor.</div></div>
+          <div class="concept-row"><div class="term">on-call (nöbet)</div><div class="def">Bir sistem çökerse aranacak kişi. Sırayla olur ve genelde gecenin bir yarısında çalar.</div></div>
+          <div class="concept-row"><div class="term">canary / shadow mode</div><div class="def">Yeni bir şeyi önce trafiğin küçük bir bölümüne açıp gözlemlemek. <b>Kömür ocağındaki kanarya mantığı.</b></div></div>
+          <div class="concept-row"><div class="term">rollback (ML)</div><div class="def">Modelin eski sürümüne geri dönmek. "Yeni versiyon bozuk, eskiye dönelim."</div></div>
+          <div class="concept-row"><div class="term">postmortem</div><div class="def">Olay sonrası rapor. "Ne oldu, neden oldu, bir daha olmasın nasıl önleriz?"</div></div>
+          <div class="concept-row"><div class="term">blameless</div><div class="def">Kimseyi suçlamadan olayı analiz etme kültürü. <b>"Kim yaptı" değil "süreç niye izin verdi?"</b></div></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Vurgu</div>
+        <div class="hl">Bu sohbetin altın kuralı: <b>"Önce yangını söndür (rollback), sonra niye çıktığını anla (postmortem)."</b> İyi ekipler iki şeyi karıştırmaz.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ STEP 8 · CHAT 4 ============ -->
+  <section class="step" id="s8">
+    <div class="step-head">
+      <span class="step-num chat">04</span>
+      <h2>Sohbet 04 · arch-rfc-review</h2>
+      <span class="where">Sol menü → <b># arch-rfc-review</b></span>
+      <span class="dur-pill">≈ 3 dk</span>
+    </div>
+    <div class="step-body">
+
+      <div class="block">
+        <div class="block-label">Hikâye</div>
+        <p>İki lider aynı duruma <b>farklı pencereden</b> bakıyor. Mert "insan/onboarding sorunu" diyor, Burak "mimari sorun, ayrıştırmalıyız" diyor. Tartışmıyorlar — <b>karşılıklı ikna ediyorlar</b>. Sonunda bir orta yol: <b>önce kod içinde temiz sınırlar çiz, 6 ay sonra gerçek ayrıştırmayı yap</b>.</p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Açıklanacak kavramlar</div>
+        <div class="concepts">
+          <div class="concept-row"><div class="term">RFC (request for comments)</div><div class="def">"Şöyle bir değişiklik yapmak istiyorum, ne düşünürsünüz?" dokümanı. Yorum almak için.</div></div>
+          <div class="concept-row"><div class="term">monolit</div><div class="def">Her şeyin tek bir uygulamada olduğu yapı. Küçükken hızlı, büyüyünce yavaşlar.</div></div>
+          <div class="concept-row"><div class="term">servis ayrıştırma (microservices)</div><div class="def">Tek büyük uygulamayı küçük bağımsız parçalara bölmek. Her parça kendi işini yapar.</div></div>
+          <div class="concept-row"><div class="term">teknik borç</div><div class="def">"Şimdilik hızlı çözüm, sonra düzeltiriz" deyip düzeltilmemiş şeyler. <b>Faizi ağır.</b></div></div>
+          <div class="concept-row"><div class="term">onboarding</div><div class="def">Yeni gelen birinin ekibe ve sisteme alışma süreci. Eski ekip için de yük yaratır.</div></div>
+          <div class="concept-row"><div class="term">kademeli ayrıştırma</div><div class="def">Tek seferde baştan yazmak yerine yavaş yavaş bölme. <b>"Apartmanı yıkmadan dairelere ayırma."</b></div></div>
+          <div class="concept-row"><div class="term">mimari karar kaydı (ADR)</div><div class="def">"Bu kararı niye verdik?" sorusunun yazılı cevabı. 6 ay sonra çok faydalı.</div></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Vurgu</div>
+        <div class="hl">Bu sohbet <b>yazılım kararlarının çoğunlukla siyah-beyaz olmadığını</b> gösterir. İki lider de haklı — birleştirilmiş bir karar herkesin kazanmasını sağlıyor.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ STEP 9 · CHAT 5 ============ -->
+  <section class="step" id="s9">
+    <div class="step-head">
+      <span class="step-num chat">05</span>
+      <h2>Sohbet 05 · daily-standup</h2>
+      <span class="where">Sol menü → <b># daily-standup</b></span>
+      <span class="dur-pill">≈ 2 dk</span>
+    </div>
+    <div class="step-body">
+
+      <div class="block">
+        <div class="block-label">Hikâye</div>
+        <p>Sabah 09:30, ekip 10 dakikalık daily yapıyor. Herkes sırayla aynı kalıbı kullanıyor: <b>dün ne yaptım / bugün ne yapacağım / engelim var mı</b>. Detaya girilmiyor — uzun konuşmalar toplantı dışına bırakılıyor. Nazlı'nın engeli (test ortamı çökmüş) <b>anında sahipleniliyor</b>.</p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Açıklanacak kavramlar</div>
+        <div class="concepts">
+          <div class="concept-row"><div class="term">daily / standup</div><div class="def">Her sabah 10-15 dk'lık kısa toplantı. Ayakta yapılır ki uzamasın.</div></div>
+          <div class="concept-row"><div class="term">engel (blocker)</div><div class="def">"İşimi yapmak istiyorum ama şu yüzden yapamıyorum." Ekibin görevi engeli kaldırmak.</div></div>
+          <div class="concept-row"><div class="term">demo</div><div class="def">Sprint sonunda yapılanları müşteriye/paydaşa gösterme toplantısı.</div></div>
+          <div class="concept-row"><div class="term">bilgi paylaşımı (knowledge share)</div><div class="def">Ekip üyelerinin bildiklerini birbirine aktardığı kısa sunum.</div></div>
+          <div class="concept-row"><div class="term">sync / async</div><div class="def"><b>Sync:</b> aynı anda konuşmak (toplantı). <b>Async:</b> sonra okumak (yazılı not). İyi ekipler ikisini dengeler.</div></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Vurgu</div>
+        <div class="hl"><b>Daily kötü kullanılırsa raporlama toplantısına dönüşür.</b> Burada öyle değil — sadece engelleri görünür yapmak için. 10 dakikada bitiyor.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ STEP 10 · SOLUTION ============ -->
+  <section class="step" id="s10">
+    <div class="step-head">
+      <span class="step-num solve">06</span>
+      <h2>Sayfa 06 · Çözüm — terimlerin insanca karşılığı</h2>
+      <span class="where">Sol menü → <b>🔑 ne demek istediler?</b></span>
+      <span class="dur-pill">≈ 3 dk</span>
+    </div>
+    <div class="step-body">
+
+      <div class="block">
+        <div class="block-label">Bu sayfa ne işe yarar?</div>
+        <p>Sohbetlerde geçen tüm jargonun <b>insanca karşılığı</b> ve her sohbetin <b>tek cümlelik özeti</b>. Sunumun sonunda dinleyici "her şeyi yakaladım" hissetmek için buraya dönüyor.</p>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Nasıl kullan?</div>
+        <ul class="check">
+          <li>Tek tek tüm terimleri okuma — sıkıcı olur. Bunun yerine <b>"hatırlamadığınız bir terim var mıydı?"</b> diye sor.</li>
+          <li>En altta <b>"Dikkat ettiysen…"</b> bölümü var — burada 5 ortak ders çıkarımı var. Bunları yüksek sesle oku, çünkü asıl mesaj orada.</li>
+        </ul>
+      </div>
+
+      <div class="block">
+        <div class="block-label">Sonuçları okurken vurgula</div>
+        <div class="concepts">
+          <div class="concept-row"><div class="term">1. Soru sormak güçsüzlük değil</div><div class="def">İyi ekiplerde junior açıkça yardım ister, kimse alay etmez.</div></div>
+          <div class="concept-row"><div class="term">2. Problemi isimlendirmek = çözmek</div><div class="def">"Idempotency", "race condition" gibi terimler ekibin aynı şeyi kastettiğinden emin olmasını sağlar.</div></div>
+          <div class="concept-row"><div class="term">3. Farklı roller, farklı bakışlar</div><div class="def">PO/Dev/QA/Tasarımcı aynı hataya farklı yerlerden bakar — hepsi haklı.</div></div>
+          <div class="concept-row"><div class="term">4. "Acil" ≠ "Önemli"</div><div class="def">İyi ekipler panik yapmaz; önce kökü arar.</div></div>
+          <div class="concept-row"><div class="term">5. "Retro'da konuşalım"</div><div class="def">Anlık tartışma yerine doğru zamanda konuşmak ekibi rahatlatır.</div></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ CLOSING ============ -->
+  <section class="closing" id="s11">
+    <h2>🎤 Kapanış · Soru-cevap</h2>
+    <p>Sunumu şu cümleyle kapat:</p>
+    <div class="say" style="font-style:normal;background:rgba(72,199,142,.08);border-left-color:var(--green);margin-top:14px">Bugün gördüğümüz şey aslında <b>yazılım değildi</b> — bir grup insanın bir problemi <b>birlikte ve düzenli</b> çözme biçimiydi. Terimler değişebilir, araçlar değişir; ama "soru sor, kökü ara, suçlama, paylaş" kuralları her sektörde işler.</div>
+
+    <div class="qs">
+      <div class="q"><b>Beklenen Soru</b>"Bu kadar terim gerçekten gerekli mi?" → Evet, ama herkesin <b>aynı şeyi kastettiğinden emin olmak için</b> gerekli. Aksi halde 10 kişi 10 farklı şey anlar.</div>
+      <div class="q"><b>Beklenen Soru</b>"Spotify modeli her şirkete uyar mı?" → Hayır. Spotify bile artık tam olarak böyle çalışmıyor. Önemli olan <b>squad + chapter</b> mantığını anlamak — uygulanışı şirketten şirkete değişir.</div>
+      <div class="q"><b>Beklenen Soru</b>"Bir sprint kaç gündür?" → Genelde 2 hafta. Ama 1 hafta da olabilir, 3 hafta da. Önemli olan <b>sabit ve tekrar eden</b> olması.</div>
+      <div class="q"><b>Beklenen Soru</b>"Story point neden saat değil?" → Çünkü "ne kadar zor / belirsiz" sorusu "kaç saat sürer"den daha doğru tahmin edilebiliyor.</div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

@@ -571,7 +571,7 @@
   }
 
   .board{
-    display:grid;grid-template-columns:repeat(4, 1fr);gap:6px;
+    display:grid;grid-template-columns:repeat(6, 1fr);gap:6px;
   }
   .col{
     background:rgba(0,0,0,.1);border:1px solid var(--border);
@@ -593,7 +593,9 @@
   }
   .c-backlog .col-status{background:#5c6570;}
   .c-progress .col-status{background:#3f86ed;}
+  .c-blocked .col-status{background:#e01e5a;}
   .c-review .col-status{background:#d6a220;}
+  .c-test .col-status{background:#b68cff;}
   .c-done .col-status{background:#2d9b5e;}
   .col-status .cname{flex:1}
   .col-status .count{
@@ -717,7 +719,9 @@
   }
   .modal-head .status-pill.backlog{background:#5c6570}
   .modal-head .status-pill.progress{background:#3f86ed}
+  .modal-head .status-pill.blocked{background:#e01e5a}
   .modal-head .status-pill.review{background:#d6a220}
+  .modal-head .status-pill.test{background:#b68cff}
   .modal-head .status-pill.done{background:#2d9b5e}
   .modal-close{
     background:transparent;border:1px solid var(--border);
@@ -816,6 +820,9 @@
     .modal-side{border-top:1px solid var(--border);padding-top:16px}
   }
 
+  @media (max-width:1400px){
+    .board{grid-template-columns:repeat(3, 1fr);gap:8px}
+  }
   @media (max-width:900px){
     .stats{grid-template-columns:repeat(2,1fr)}
     .product-grid{grid-template-columns:1fr}
@@ -917,7 +924,7 @@
           <span class="t" id="head-title">şirket</span>
         </div>
         <div class="sub" id="head-sub">
-          <span>Nexora Payments · ne yaparız, nasıl çalışırız</span>
+          <span>Akçe Ödeme Sistemleri · ne yaparız, nasıl çalışırız</span>
         </div>
       </div>
       <div class="right" id="head-meta">A / 3 tanı</div>
@@ -1022,7 +1029,7 @@
           </div>
 
           <div class="page-section">
-            <div class="section-label">Neden Nexora?</div>
+            <div class="section-label">Neden Akçe?</div>
             <div class="section-title">Sessizce çalışırız, gürültüsüzce büyürüz</div>
             <p style="color:var(--ink);font-size:15px;line-height:1.7;max-width:720px">
               Bir ödeme sistemi fark edildiğinde, işler yolunda gitmiyor demektir. Bizim başarımız, kullanıcıların Akçe'yi hiç hatırlamamasıdır. İşyeri sahibi sabah uyanıp gelirini gördüğünde, müşteri kartı çekmeden önce hiç düşünmeden tıkladığında — orada biziz. Görünmez ama güvenilir. Üstelik işimizi yaparken kendi ekibimize de aynı özeni gösteriyoruz: net roller, açık iletişim, kimseyi sıkıştırmayan bir temponun içinde büyüyen bir şirketiz.
@@ -1304,7 +1311,7 @@
               <div class="col-head">
                 <div class="col-status">
                   <span class="cname">⚡ Yapılıyor</span>
-                  <span class="count">4</span>
+                  <span class="count">3</span>
                   <span class="plus">+</span>
                 </div>
               </div>
@@ -1315,13 +1322,6 @@
                   <div class="ctitle">Kullanıcı olarak, bir ödeme yapmayı denediğimde sadece bir kez ücretlendirilmek istiyorum</div>
                   <div class="ctags"><span class="tagchip t-be">BE</span><span class="tagchip t-bug">BUG</span><span class="tagchip t-p1">P1</span></div>
                   <div class="cfoot"><div class="cfoot-left">💬 12</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-deniz">DY</div><div class="cpoints"><b>8</b> sp</div></div></div>
-                </div>
-
-                <div class="card" data-card-id="PAY-2090">
-                  <div class="card-top"><span class="cid">PAY-2090</span><span class="card-priority p1" title="P1"></span></div>
-                  <div class="ctitle">Sistem olarak, banka onayı gecikirse bile mükerrer tahsilat yapmamalıyım</div>
-                  <div class="ctags"><span class="tagchip t-sre">SRE</span><span class="tagchip t-tech">TECH</span><span class="tagchip t-p1">P1</span></div>
-                  <div class="cfoot"><div class="cfoot-left">💬 9</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-burak">BÖ</div><div class="cpoints"><b>5</b> sp</div></div></div>
                 </div>
 
                 <div class="card" data-card-id="PAY-2093">
@@ -1341,12 +1341,33 @@
               </div>
             </div>
 
+            <!-- BLOCKED -->
+            <div class="col c-blocked">
+              <div class="col-head">
+                <div class="col-status">
+                  <span class="cname">🚫 Engellendi</span>
+                  <span class="count">1</span>
+                  <span class="plus">+</span>
+                </div>
+              </div>
+              <div class="col-body">
+
+                <div class="card" data-card-id="PAY-2090">
+                  <div class="card-top"><span class="cid">PAY-2090</span><span class="card-priority p1" title="P1"></span></div>
+                  <div class="ctitle">Sistem olarak, banka onayı gecikirse bile mükerrer tahsilat yapmamalıyım</div>
+                  <div class="ctags"><span class="tagchip t-sre">SRE</span><span class="tagchip t-tech">TECH</span><span class="tagchip t-p1">P1</span></div>
+                  <div class="cfoot"><div class="cfoot-left">💬 9</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-burak">BÖ</div><div class="cpoints"><b>5</b> sp</div></div></div>
+                </div>
+
+              </div>
+            </div>
+
             <!-- IN REVIEW -->
             <div class="col c-review">
               <div class="col-head">
                 <div class="col-status">
                   <span class="cname">👀 İnceleme</span>
-                  <span class="count">3</span>
+                  <span class="count">2</span>
                   <span class="plus">+</span>
                 </div>
               </div>
@@ -1365,6 +1386,20 @@
                   <div class="ctags"><span class="tagchip t-sre">SRE</span><span class="tagchip t-bug">BUG</span><span class="tagchip t-p1">P1</span></div>
                   <div class="cfoot"><div class="cfoot-left">💬 11</div><div style="display:flex;gap:6px;align-items:center"><div class="cassign a-tolga">TB</div><div class="cpoints"><b>3</b> sp</div></div></div>
                 </div>
+
+              </div>
+            </div>
+
+            <!-- TEST -->
+            <div class="col c-test">
+              <div class="col-head">
+                <div class="col-status">
+                  <span class="cname">🧪 Test</span>
+                  <span class="count">1</span>
+                  <span class="plus">+</span>
+                </div>
+              </div>
+              <div class="col-body">
 
                 <div class="card" data-card-id="PAY-2087">
                   <div class="card-top"><span class="cid">PAY-2087</span><span class="card-priority p2" title="P2"></span></div>
@@ -2266,7 +2301,7 @@
   const mainBody = document.getElementById('main-body');
 
   const titles = {
-    'c1': { hash:'🏢', title:'şirket', sub:'Nexora Payments · ne yaparız, nasıl çalışırız' },
+    'c1': { hash:'🏢', title:'şirket', sub:'Akçe Ödeme Sistemleri · ne yaparız, nasıl çalışırız' },
     'c2': { hash:'🧬', title:'tribe yapısı', sub:'Ödeme Omurgası Tribe · 4 squad · 32 üye' },
     'c3': { hash:'📋', title:'kanban board', sub:'Checkout Squad · Sprint 34 · 5. gün' },
     '1': { hash:'#', title:'pod-checkout-sync', sub:'3 chapter lead + PO · Checkout servisi sohbeti' },
@@ -2345,7 +2380,7 @@
         {who:'Elif', ini:'EA', clr:'a-elif', txt:'Legal ekibine brief gönderdi', time:'2 gün önce · 15:00'},
         {who:'Burak', ini:'BÖ', clr:'a-burak', txt:'Durumu <b>Yapılıyor</b>\'a çekti', time:'1 gün önce · 09:30'}
       ],
-      status:'progress', statusLabel:'YAPILIYOR', type:'TECH', typeColor:'t-tech',
+      status:'blocked', statusLabel:'ENGELLENDİ', type:'TECH', typeColor:'t-tech',
       assignee:{name:'Burak Özkan', ini:'BÖ', role:'SRE / Platform Lead', clr:'a-burak'},
       points:5, priority:'P1 · Acil',
       labels:[{t:'SRE',c:'t-sre'},{t:'TECH',c:'t-tech'},{t:'P1',c:'t-p1'}],
@@ -2471,7 +2506,7 @@
         {who:'Aslı', ini:'AY', clr:'a-asli', txt:'Olay sonrası taslağı yazdı', time:'3 gün önce · 11:00'},
         {who:'Aslı', ini:'AY', clr:'a-asli', txt:'Review için atadı', time:'Dün · 15:20'}
       ],
-      status:'review', statusLabel:'İNCELEME', type:'TECH', typeColor:'t-tech',
+      status:'test', statusLabel:'TEST', type:'TECH', typeColor:'t-tech',
       assignee:{name:'Aslı Yıldırım', ini:'AY', role:'ML Engineer', clr:'a-asli'},
       points:2, priority:'P2 · Önemli',
       labels:[{t:'ML',c:'t-ml'},{t:'TECH',c:'t-tech'}],
@@ -2526,7 +2561,7 @@
     const el = document.querySelector(`[data-card-id="${id}"]`);
     if (!el) return null;
     const titleEl = el.querySelector('.ctitle');
-    const statusMap = {'c-backlog':['backlog','YAPILACAK'],'c-progress':['progress','YAPILIYOR'],'c-review':['review','İNCELEME'],'c-done':['done','BİTTİ']};
+    const statusMap = {'c-backlog':['backlog','YAPILACAK'],'c-progress':['progress','YAPILIYOR'],'c-blocked':['blocked','ENGELLENDİ'],'c-review':['review','İNCELEME'],'c-test':['test','TEST'],'c-done':['done','BİTTİ']};
     const col = el.closest('.col');
     let statusKey='backlog', statusLabel='YAPILACAK';
     for (const [cls, [k, lbl]] of Object.entries(statusMap)) {
